@@ -8,7 +8,7 @@
     {
         public static Guid EncryptIntoGuid(this Int32 input, string key, string vector)
         {
-            using (var algorithm = new RijndaelManaged())
+            using (var algorithm = Guint.GetAlgorithm())
             {
                 algorithm.Key = Convert.FromBase64String(key);
                 algorithm.IV = Convert.FromBase64String(vector);
@@ -27,7 +27,7 @@
 
         public static Int32? DecryptToInt(this Guid guid, string key, string vector)
         {
-            using (var algorithm = new RijndaelManaged())
+            using (var algorithm = Guint.GetAlgorithm())
             {
                 algorithm.Key = Convert.FromBase64String(key);
                 algorithm.IV = Convert.FromBase64String(vector);
@@ -40,7 +40,7 @@
                     {
                         using (var reader = new StreamReader(crypto))
                         {
-                            return int.Parse(reader.ReadToEnd());
+                            return Int32.Parse(reader.ReadToEnd());
                         }
                     }
                     catch
