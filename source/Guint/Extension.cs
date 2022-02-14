@@ -10,17 +10,16 @@
         {
             using (var algorithm = Guint.GetAlgorithm())
             {
-                algorithm.Key = Convert.FromBase64String(key);
-                algorithm.IV = Convert.FromBase64String(vector);
-
-                using (var encryptor = algorithm.CreateEncryptor(algorithm.Key, algorithm.IV))
-                using (var memory = new MemoryStream())
-                using (var crypto = new CryptoStream(memory, encryptor, CryptoStreamMode.Write))
+                using (var encryptor = algorithm.CreateEncryptor(Convert.FromBase64String(key), Convert.FromBase64String(vector)))
                 {
-                    using (var writer = new StreamWriter(crypto))
-                        writer.Write(input.ToString());
+                    var bytes = BitConverter.GetBytes(input);
 
-                    return new Guid(memory.ToArray());
+                    if (false == BitConverter.IsLittleEndian)
+                    {
+                        Array.Reverse(bytes);
+                    }
+
+                    return new Guid(Crypt(bytes, encryptor));
                 }
             }
         }
@@ -29,25 +28,22 @@
         {
             using (var algorithm = Guint.GetAlgorithm())
             {
-                algorithm.Key = Convert.FromBase64String(key);
-                algorithm.IV = Convert.FromBase64String(vector);
-
-                using (var decryptor = algorithm.CreateDecryptor(algorithm.Key, algorithm.IV))
-                using (var memory = new MemoryStream(guid.ToByteArray()))
-                using (var crypto = new CryptoStream(memory, decryptor, CryptoStreamMode.Read))
+                using (var decryptor = algorithm.CreateDecryptor(Convert.FromBase64String(key), Convert.FromBase64String(vector)))
                 {
-                    try
-                    {
-                        using (var reader = new StreamReader(crypto))
-                        {
-                            return Int32.Parse(reader.ReadToEnd());
-                        }
-                    }
-                    catch
-                    {
-                        return default;
-                    }
+                    return BitConverter.ToInt32(Crypt(guid.ToByteArray(), decryptor), 0);
                 }
+            }
+        }
+
+        private static byte[] Crypt(byte[] data, ICryptoTransform transform)
+        {
+            using (var memory = new MemoryStream())
+            using (var crypto = new CryptoStream(memory, transform, CryptoStreamMode.Write))
+            {
+                crypto.Write(data, 0, data.Length);
+                crypto.FlushFinalBlock();
+
+                return memory.ToArray();
             }
         }
     }
