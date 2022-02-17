@@ -1,8 +1,27 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
+    <Authors>Joep Geevers</Authors>
+    <Description>Convert ints into Guids and vice versa, to avoid enumeration leaks in your application. Use Guids for your API endpoints and ints in your database and put Guint in between. Have your cake and eat it too!</Description>
+    <Copyright>MIT</Copyright>
+    <PackageProjectUrl>https://github.com/Heras/Guint</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Heras/Guint</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>guint.nuget.icon.png</PackageIcon>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\guint.nuget.icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>
