@@ -30,7 +30,14 @@
             {
                 using (var decryptor = algorithm.CreateDecryptor(Convert.FromBase64String(key), Convert.FromBase64String(vector)))
                 {
-                    return BitConverter.ToInt32(Crypt(guid.ToByteArray(), decryptor), 0);
+                    var bytes = Crypt(guid.ToByteArray(), decryptor);
+
+                    if (null == bytes)
+                    {
+                        return default;
+                    }
+
+                    return BitConverter.ToInt32(bytes, 0);
                 }
             }
         }
@@ -41,7 +48,15 @@
             using (var crypto = new CryptoStream(memory, transform, CryptoStreamMode.Write))
             {
                 crypto.Write(data, 0, data.Length);
-                crypto.FlushFinalBlock();
+                
+                try
+                {
+                    crypto.FlushFinalBlock();
+                }
+                catch(CryptographicException e) when (e.Message == "Padding is invalid and cannot be removed.")
+                {
+                    return null;
+                }
 
                 return memory.ToArray();
             }
