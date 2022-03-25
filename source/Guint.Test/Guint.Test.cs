@@ -6,7 +6,7 @@ namespace Guint.Test
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class GuintTests
+    public class GuintTest
     {
         [TestMethod]
         public void GeneratedKeyAndVectorAreAlwaysDifferentAndWork()
