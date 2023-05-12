@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guint.Test", "Guint.Test\Gu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Guint.Test.Framework", "Guint.Test.Framework\Guint.Test.Framework.csproj", "{C2B0A683-9214-4C6A-AD38-42B0CE272770}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Guint.Translator", "Guint.Translator\Guint.Translator.csproj", "{751BA854-C3B5-414C-979B-F12E07982B07}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{C2B0A683-9214-4C6A-AD38-42B0CE272770}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2B0A683-9214-4C6A-AD38-42B0CE272770}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2B0A683-9214-4C6A-AD38-42B0CE272770}.Release|Any CPU.Build.0 = Release|Any CPU
+		{751BA854-C3B5-414C-979B-F12E07982B07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{751BA854-C3B5-414C-979B-F12E07982B07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{751BA854-C3B5-414C-979B-F12E07982B07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{751BA854-C3B5-414C-979B-F12E07982B07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
