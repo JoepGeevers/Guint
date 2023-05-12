@@ -8,6 +8,7 @@ public class SysTrayApp : Form
     private string previous;
 
     (string key, string vector) Pair = ("", "");
+    private string found;
 
     [STAThread]
     public static void Main()
@@ -26,6 +27,15 @@ public class SysTrayApp : Form
 
         trayIcon.ContextMenuStrip = trayMenu;
         trayIcon.Visible = true;
+
+        trayIcon.BalloonTipClicked += (sender, args) =>
+        {
+            if (!string.IsNullOrEmpty(this.found))
+            {
+                this.previous = this.found;
+                Clipboard.SetText(this.found);
+            }
+        };
 
         clipboardCheckTimer = new System.Windows.Forms.Timer();
         clipboardCheckTimer.Interval = 1000; // Check every second
@@ -73,11 +83,8 @@ public class SysTrayApp : Form
             if (int.TryParse(current, out int i))
             {
                 var encrypted = i.EncryptIntoGuid(this.Pair.key, this.Pair.vector);
-
-                previous = encrypted.ToString();
-                Clipboard.SetText(encrypted.ToString());
-
-                ShowBalloon($"An integer `{i}` was found on the clipboard. I copied the corresponding Guid `{encrypted}` onto the clipboard");
+                this.found = encrypted.ToString();
+                ShowBalloon($"An integer `{i}` was found on the clipboard. Click here to copy the corresponding Guid `{encrypted}` onto the clipboard");
             }
             else if (Guid.TryParse(current, out var g))
             {
@@ -85,10 +92,9 @@ public class SysTrayApp : Form
 
                 if (decrypted.HasValue)
                 {
-                    previous = decrypted.Value.ToString();
-                    Clipboard.SetText(decrypted.Value.ToString());
+                    this.found = decrypted.Value.ToString();
 
-                    ShowBalloon($"A guid `{g}` was found on the clipboard. I copied the corresponding int `{decrypted}` onto the clipboard");
+                    ShowBalloon($"A guid `{g}` was found on the clipboard. Click here to copy the corresponding int `{decrypted}` onto the clipboard");
                 }
             }
         }
@@ -97,6 +103,6 @@ public class SysTrayApp : Form
     private void ShowBalloon(string message)
     {
         trayIcon.BalloonTipText = message;
-        trayIcon.ShowBalloonTip(1000);
+        trayIcon.ShowBalloonTip(2000);
     }
 }
