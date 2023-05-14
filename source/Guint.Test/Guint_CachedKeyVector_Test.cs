@@ -18,7 +18,7 @@
         public void WhenSettingInvalidKeyVectorPair_ThrowsException()
         {
             // arrange
-            var exception = default(Exception);
+            var exception = default(ArgumentException);
             var key = "iEoZxvDg38zjvdUF33lo1A==";
             var vector = "axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=";
 
@@ -48,6 +48,25 @@
         [TestMethod]
         public void WhenCallingDecrypt_WithoutKeyValuePairConfigured_ThrowsException()
         {
+            // arrange
+            var exception = default(InvalidOperationException);
+            (var key, var vector) = Guint.GenerateKeyAndInitializationVector();
+
+            Guint.Set(key, vector);
+
+            // act
+            try
+            {
+                Guint.Set(key, vector);
+            }
+            catch (InvalidOperationException e)
+            {
+                exception = e;
+            }
+
+            // assert
+            Assert.IsNotNull(exception);
+            Assert.IsTrue(exception.Message.Contains("more than once"));
         }
 
         [TestMethod]

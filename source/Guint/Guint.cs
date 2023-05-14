@@ -95,6 +95,11 @@
 
         public static void Set(string key, string vector)
         {
+            if (key != null || vector != null)
+            {
+                throw new InvalidOperationException("Cannot set key and vector more than once");
+            }
+
             try
             {
                 EncryptIntoGuid(123, key, vector);
