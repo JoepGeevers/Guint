@@ -6,6 +6,11 @@
 
     public static class Guint
     {
+        private static string key;
+        private static string vector;
+
+        private const string invalidPaddingMessage = "Padding is invalid and cannot be removed.";
+
         public static (string Key, string InitializationVector) GenerateKeyAndInitializationVector()
         {
             using (var algorithm = Guint.GetAlgorithm())
@@ -22,7 +27,6 @@
 
         internal static Aes GetAlgorithm() => Aes.Create();
 
-        private const string invalidPaddingMessage = "Padding is invalid and cannot be removed.";
 
         public static Guid EncryptIntoGuid(this Int32 input, string key, string vector)
         {
@@ -87,6 +91,27 @@
 
                 return memory.ToArray();
             }
+        }
+
+        public static void Set(string key, string vector)
+        {
+            try
+            {
+                EncryptIntoGuid(123, key, vector);
+            }
+            catch(Exception e)
+            {
+                throw new ArgumentException("Specified key and vector are invalid. See inner exception for more details", e)
+                {
+                    Data = {
+                        { "Key", key },
+                        { "Vector", vector },
+                    },
+                };
+            }
+
+            Guint.key = key;
+            Guint.vector = vector;
         }
     }
 }
