@@ -1,26 +1,12 @@
-namespace Guint.Test
+﻿namespace Guint.Test
 {
     using System;
-    using System.Linq;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class GuintTest
+    public class Guint_NonCachedKeyVector_Test
     {
-        [TestMethod]
-        public void GeneratedKeyAndVectorAreAlwaysDifferentAndWork()
-        {
-            // act
-            var f = Enumerable
-                .Range(0, 1000)
-                .Select(i => Guint.GenerateKeyAndInitializationVector());
-
-            // assert
-            Assert.AreEqual(1000, f.Select(t => t.Key).Distinct().Count());
-            Assert.AreEqual(1000, f.Select(t => t.InitializationVector).Distinct().Count());
-        }
-
         [TestMethod]
         public void Int32MinValueCanBeCorrectlyEncrypted()
         {
@@ -106,62 +92,6 @@ namespace Guint.Test
 
             // assert
             Assert.IsNull(id);
-        }
-
-        [TestMethod]
-        public void WhenSettingInvalidKeyVectorPair_ThrowsException()
-        {
-            // arrange
-            var exception = default(Exception);
-            var key = "iEoZxvDg38zjvdUF33lo1A==";
-            var vector = "axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=";
-
-            // act
-            try
-            {
-                Guint.Set(key, vector);
-            }
-            catch (ArgumentException e)
-            {
-                exception = e;
-            }
-
-            // assert
-            Assert.IsNotNull(exception);
-            Assert.IsTrue(exception.Message.Contains("invalid"));
-
-            Assert.IsTrue(exception.Data.Contains("Key"));
-            Assert.AreEqual(exception.Data["Key"], key);
-
-            Assert.IsTrue(exception.Data.Contains("Vector"));
-            Assert.AreEqual(exception.Data["Vector"], vector);
-
-            Assert.IsNotNull(exception.InnerException);
-        }
-
-        [TestMethod]
-        public void WhenCallingDecrypt_WithoutKeyValuePairConfigured_ThrowsException()
-        {
-        }
-
-        [TestMethod]
-        public void WhenCallingEncrypt_WithoutKeyValuePair_ThrowsException()
-        {
-        }
-
-        [TestMethod]
-        public void WhenSettingValidKeyVectorPair_PairIsUsedForEncryption()
-        {
-        }
-
-        [TestMethod]
-        public void WhenSettingValidKeyVectorPair_PairIsUsedForDecryption()
-        {
-        }
-
-        [TestMethod]
-        public void WhenSettingKeyVectorPairAgain_ThrowsException()
-        {
         }
     }
 }
