@@ -95,7 +95,7 @@
 
         public static void Set(string key, string vector)
         {
-            if (key != null || vector != null)
+            if (Guint.key != null || Guint.vector != null)
             {
                 throw new InvalidOperationException("Cannot set key and vector more than once");
             }
@@ -117,6 +117,16 @@
 
             Guint.key = key;
             Guint.vector = vector;
+        }
+
+        public static Guid EncryptIntoGuid(int input)
+        {
+            if (Guint.key == null || Guint.vector == null)
+            {
+                throw new InvalidOperationException("Cannot encrypt because key and vector have not yet been set");
+            }
+
+            throw new NotImplementedException();
         }
     }
 }

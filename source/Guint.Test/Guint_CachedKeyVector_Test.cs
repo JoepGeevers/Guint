@@ -70,8 +70,24 @@
         }
 
         [TestMethod]
-        public void WhenCallingEncrypt_WithoutKeyValuePair_ThrowsException()
+        public void WhenCallingEncrypt_WithoutKeyValueSet_ThrowsException()
         {
+            // arrange
+            var exception = default(InvalidOperationException);
+
+            // act
+            try
+            {
+                Guint.EncryptIntoGuid(123);
+            }
+            catch (InvalidOperationException e)
+            {
+                exception = e;
+            }
+
+            // assert
+            Assert.IsNotNull(exception);
+            Assert.IsTrue(exception.Message.Contains("not yet been set"));
         }
 
         [TestMethod]
@@ -88,5 +104,7 @@
         public void WhenSettingKeyVectorPairAgain_ThrowsException()
         {
         }
+
+        // also implement all methods the same as the non cached ones
     }
 }
