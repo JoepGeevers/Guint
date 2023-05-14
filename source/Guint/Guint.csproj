@@ -24,4 +24,8 @@
 		</None>
 	</ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="Guint.Test" />
+    </ItemGroup>
+    
 </Project>

@@ -7,6 +7,13 @@
     [TestClass]
     public class Guint_CachedKeyVector_Test
     {
+        [TestCleanup]
+        public void Cleanup()
+        {
+            Guint.key = null;
+            Guint.vector = null;
+        }
+
         [TestMethod]
         public void WhenSettingInvalidKeyVectorPair_ThrowsException()
         {

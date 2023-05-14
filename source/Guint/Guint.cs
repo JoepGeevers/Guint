@@ -6,8 +6,8 @@
 
     public static class Guint
     {
-        private static string key;
-        private static string vector;
+        internal static string key;
+        internal static string vector;
 
         private const string invalidPaddingMessage = "Padding is invalid and cannot be removed.";
 
