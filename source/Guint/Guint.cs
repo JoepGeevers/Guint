@@ -2,7 +2,7 @@
 {
     using System;
     using System.IO;
-    using System.Security.Cryptography;
+	using System.Security.Cryptography;
 
     public static class Guint
     {
@@ -13,15 +13,15 @@
 
         public static (string Key, string InitializationVector) GenerateKeyAndInitializationVector()
         {
-            using (var algorithm = Guint.GetAlgorithm())
+            using (var algorithm = GetAlgorithm())
             {
                 algorithm.GenerateKey();
                 algorithm.GenerateIV();
 
                 var key = Convert.ToBase64String(algorithm.Key);
-                var initializationVector = Convert.ToBase64String(algorithm.IV);
+                var vector = Convert.ToBase64String(algorithm.IV);
 
-                return (key, initializationVector);
+                return (key, vector);
             }
         }
 
@@ -44,7 +44,7 @@
             }
         }
 
-        public static Int32? DecryptToInt(this Guid guid, string key, string vector)
+		public static Int32? DecryptToInt(this Guid guid, string key, string vector)
         {
             using (var algorithm = Guint.GetAlgorithm())
             using (var decryptor = algorithm.CreateDecryptor(Convert.FromBase64String(key), Convert.FromBase64String(vector)))
@@ -60,7 +60,7 @@
             }
         }
 
-        private static byte[] Crypt(byte[] data, ICryptoTransform transform)
+		private static byte[] Crypt(byte[] data, ICryptoTransform transform)
         {
             using (var memory = new MemoryStream())
             using (var crypto = new CryptoStream(memory, transform, CryptoStreamMode.Write))
@@ -93,7 +93,7 @@
             }
         }
 
-        public static void Set(string key, string vector)
+		public static void Set(string key, string vector)
         {
             if (Guint.key != null || Guint.vector != null)
             {
@@ -119,14 +119,14 @@
             Guint.vector = vector;
         }
 
-        public static Guid EncryptIntoGuid(int input)
-        {
-            if (Guint.key == null || Guint.vector == null)
-            {
-                throw new InvalidOperationException("Cannot encrypt because key and vector have not yet been set");
-            }
+		public static Guid EncryptIntoGuid(this int input)
+			=> key == null || vector == null
+				? throw new InvalidOperationException("Cannot `EncryptIntoGuid` because key and vector have not been set")
+				: input.EncryptIntoGuid(key, vector);
 
-            throw new NotImplementedException();
-        }
-    }
+		public static int? DecryptToInt(this Guid input)
+			=> key == null || vector == null
+				? throw new InvalidOperationException("Cannot `DecryptToInt` because key and vector have not been set")
+				: input.DecryptToInt(key, vector);
+	}
 }

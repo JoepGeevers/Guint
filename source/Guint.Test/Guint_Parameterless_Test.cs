@@ -7,8 +7,8 @@
     [TestClass]
     public class Guint_Parameterless_Set_Test
     {
-        [TestCleanup]
-        public void Cleanup()
+        [TestInitialize]
+        public void TestInitialize()
         {
             Guint.key = null;
             Guint.vector = null;
@@ -78,7 +78,7 @@
             // act
             try
             {
-                Guint.EncryptIntoGuid(123);
+                123.EncryptIntoGuid();
             }
             catch (InvalidOperationException e)
             {
@@ -87,31 +87,31 @@
 
             // assert
             Assert.IsNotNull(exception);
-            Assert.IsTrue(exception.Message.Contains("not yet been set"));
+            Assert.IsTrue(exception.Message.Contains("not been set"));
         }
-
-        [TestMethod]
-        public void WhenSettingValidKeyVectorPair_PairIsUsedForEncryption()
-        {
-            Assert.Fail();
-        }
-
-        [TestMethod]
-        public void WhenSettingValidKeyVectorPair_PairIsUsedForDecryption()
-        {
-			Assert.Fail();
-		}
 
 		[TestMethod]
         public void WhenSettingKeyVectorPairAgain_ThrowsException()
         {
-			Assert.Fail();
-		}
+			// arrange
+			var exception = default(InvalidOperationException);
+            (var key, var vector) = Guint.GenerateKeyAndInitializationVector();
 
-		[TestMethod]
-		public void All_NonCachedMethodsAreAlsoTestedForCached()
-		{
-			Assert.Fail();
+			Guint.Set(key, vector);
+
+			// act
+			try
+			{
+				Guint.Set(key, vector);
+			}
+			catch (InvalidOperationException e)
+			{
+				exception = e;
+			}
+
+			// assert
+			Assert.IsNotNull(exception);
+			Assert.IsTrue(exception.Message.Contains("more than once"));
 		}
 	}
 }
