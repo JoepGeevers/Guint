@@ -90,12 +90,10 @@ public class SysTrayApp : Form
             {
                 var decrypted = g.DecryptToInt(this.Pair.key, this.Pair.vector);
 
-                if (decrypted.HasValue)
-                {
-                    this.found = decrypted.Value.ToString();
-
-                    ShowBalloon($"A guid `{g}` was found on the clipboard. Click here to copy the corresponding int `{decrypted}` onto the clipboard");
-                }
+                decrypted.Switch(
+                    i => ShowBalloon($"A guid `{g}` was found on the clipboard. Click here to copy the corresponding int `{decrypted}` onto the clipboard"),
+                    notfound => { }
+                );
             }
         }
     }

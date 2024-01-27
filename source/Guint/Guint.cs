@@ -4,7 +4,10 @@
     using System.IO;
 	using System.Security.Cryptography;
 
-    public static class Guint
+	using OneOf;
+	using OneOf.Types;
+
+	public static class Guint
     {
         internal static string key;
         internal static string vector;
@@ -40,27 +43,26 @@
                     Array.Reverse(bytes);
                 }
 
-                return new Guid(Crypt(bytes, encryptor));
+                return Crypt(bytes, encryptor)
+                    .Match(
+                        b => new Guid(b),
+                        notfound => throw new InvalidOperationException("This error should really, really never happen, because any 32-bit int fits into a 128-bit Guid. Call me!"));
             }
         }
 
-		public static Int32? DecryptToInt(this Guid guid, string key, string vector)
+		public static OneOf<int, NotFound> DecryptToInt(this Guid guid, string key, string vector)
         {
             using (var algorithm = Guint.GetAlgorithm())
             using (var decryptor = algorithm.CreateDecryptor(Convert.FromBase64String(key), Convert.FromBase64String(vector)))
             {
-                var bytes = Crypt(guid.ToByteArray(), decryptor);
-
-                if (null == bytes)
-                {
-                    return default;
-                }
-
-                return BitConverter.ToInt32(bytes, 0);
+                return Crypt(guid.ToByteArray(), decryptor)
+                    .Match<OneOf<int, NotFound>>(
+						bytes => BitConverter.ToInt32(bytes, 0),
+						notfound => notfound);
             }
         }
 
-		private static byte[] Crypt(byte[] data, ICryptoTransform transform)
+		private static OneOf<byte[], NotFound> Crypt(byte[] data, ICryptoTransform transform)
         {
             using (var memory = new MemoryStream())
             using (var crypto = new CryptoStream(memory, transform, CryptoStreamMode.Write))
@@ -73,8 +75,7 @@
                 }
                 catch (CryptographicException e) when (e.Message == invalidPaddingMessage)
                 {
-                    return default;
-
+                    return new NotFound();
                 }
                 finally
                 {
@@ -124,7 +125,7 @@
 				? throw new InvalidOperationException("Cannot `EncryptIntoGuid` because key and vector have not been set")
 				: input.EncryptIntoGuid(key, vector);
 
-		public static int? DecryptToInt(this Guid input)
+		public static OneOf<int, NotFound> DecryptToInt(this Guid input)
 			=> key == null || vector == null
 				? throw new InvalidOperationException("Cannot `DecryptToInt` because key and vector have not been set")
 				: input.DecryptToInt(key, vector);
