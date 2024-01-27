@@ -5,7 +5,7 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class Guint_Parameterless_Test
+    public class Guint_Parameterless_Set_Test
     {
         [TestCleanup]
         public void Cleanup()
@@ -15,7 +15,7 @@
         }
 
         [TestMethod]
-        public void WhenSettingInvalidKeyVectorPair_ThrowsException()
+        public void Setting_InvalidKeyVectorPair_ThrowsException()
         {
             // arrange
             var exception = default(ArgumentException);
@@ -46,7 +46,7 @@
         }
 
         [TestMethod]
-        public void WhenCallingDecrypt_WithoutKeyValuePairConfigured_ThrowsException()
+        public void Decrypting_WithoutKeyValuePairSet_ThrowsException()
         {
             // arrange
             var exception = default(InvalidOperationException);
@@ -70,7 +70,7 @@
         }
 
         [TestMethod]
-        public void WhenCallingEncrypt_WithoutKeyValueSet_ThrowsException()
+        public void Encrypting_WithoutKeyValueSet_ThrowsException()
         {
             // arrange
             var exception = default(InvalidOperationException);
@@ -93,18 +93,25 @@
         [TestMethod]
         public void WhenSettingValidKeyVectorPair_PairIsUsedForEncryption()
         {
+            Assert.Fail();
         }
 
         [TestMethod]
         public void WhenSettingValidKeyVectorPair_PairIsUsedForDecryption()
         {
-        }
+			Assert.Fail();
+		}
 
-        [TestMethod]
+		[TestMethod]
         public void WhenSettingKeyVectorPairAgain_ThrowsException()
         {
-        }
+			Assert.Fail();
+		}
 
-        // also implement all methods the same as the non cached ones
-    }
+		[TestMethod]
+		public void All_NonCachedMethodsAreAlsoTestedForCached()
+		{
+			Assert.Fail();
+		}
+	}
 }
