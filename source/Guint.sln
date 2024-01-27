@@ -9,7 +9,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guint.Test", "Guint.Test\Gu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Guint.Test.Framework", "Guint.Test.Framework\Guint.Test.Framework.csproj", "{C2B0A683-9214-4C6A-AD38-42B0CE272770}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Guint.Translator", "Guint.Translator\Guint.Translator.csproj", "{751BA854-C3B5-414C-979B-F12E07982B07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guint.Translator", "Guint.Translator\Guint.Translator.csproj", "{751BA854-C3B5-414C-979B-F12E07982B07}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{49D7B228-0020-4166-BB1E-B386D5AB3EB3}"
+	ProjectSection(SolutionItems) = preProject
+		..\.gitignore = ..\.gitignore
+		guint.nuget.icon.png = guint.nuget.icon.png
+		..\LICENSE = ..\LICENSE
+		..\README.md = ..\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
