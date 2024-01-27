@@ -6,8 +6,8 @@
 		<Authors>Joep Geevers</Authors>
 		<Description>Convert ints into Guids and vice versa, to avoid enumeration leaks in your application. Use Guids for your API endpoints and ints in your database and put Guint in between. Have your cake and eat it too!</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/Heras/Guint</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/Heras/Guint</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/JoepGeevers/Guint</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/JoepGeevers/Guint</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>guint.nuget.icon.png</PackageIcon>
 		<RepositoryType>git</RepositoryType>
