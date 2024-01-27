@@ -5,7 +5,7 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class Guint_CachedKeyVector_Test
+    public class Guint_Parameterless_Test
     {
         [TestCleanup]
         public void Cleanup()
