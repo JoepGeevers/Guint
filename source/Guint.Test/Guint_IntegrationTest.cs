@@ -77,7 +77,9 @@
 				.DecryptToInt();
 
 			// assert
-			Assert.AreEqual(input, output);
+			output.Switch(
+				i => Assert.AreEqual(input, output),
+				notfound => Assert.Fail());
 		}
 
 		[TestMethod]
@@ -95,7 +97,9 @@
 				.DecryptToInt();
 
 			// assert
-			Assert.AreEqual(input, output);
+			output.Switch(
+				i => Assert.AreEqual(input, output),
+				notfound => Assert.Fail());
 		}
 
 		[TestMethod]
@@ -113,7 +117,9 @@
 				.DecryptToInt();
 
 			// assert
-			Assert.AreEqual(input, output);
+			output.Switch(
+				i => Assert.AreEqual(input, output),
+				notfound => Assert.Fail());
 		}
 	}
 }

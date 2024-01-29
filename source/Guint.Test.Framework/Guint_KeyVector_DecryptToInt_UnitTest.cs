@@ -15,10 +15,12 @@
             (var key, var vector) = ("axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=", "iEoZxvDg38zjvdUF33lo1A==");
 
             // act
-            var id = guid.DecryptToInt(key, vector);
+            var result = guid.DecryptToInt(key, vector);
 
             // assert
-            Assert.IsNull(id);
+            result.Switch(
+                i => Assert.Fail(),
+                notfound => { });
         }
     }
 }
