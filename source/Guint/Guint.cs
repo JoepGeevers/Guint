@@ -96,9 +96,14 @@
 
 		public static void Set(string key, string vector)
         {
+            if (Guint.key == key && Guint.vector == vector)
+            {
+				return;
+			}
+
             if (Guint.key != null || Guint.vector != null)
             {
-                throw new InvalidOperationException("Cannot set key and vector more than once");
+                throw new InvalidOperationException("Key and vector cannot be changed");
             }
 
             try

@@ -5,7 +5,7 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class Guint_Parameterless_Set_Test
+    public class Guint_Set_Test
     {
         [TestInitialize]
         public void TestInitialize()
@@ -46,30 +46,6 @@
         }
 
         [TestMethod]
-        public void Decrypting_WithoutKeyValuePairSet_ThrowsException()
-        {
-            // arrange
-            var exception = default(InvalidOperationException);
-            (var key, var vector) = Guint.GenerateKeyAndInitializationVector();
-
-            Guint.Set(key, vector);
-
-            // act
-            try
-            {
-                Guint.Set(key, vector);
-            }
-            catch (InvalidOperationException e)
-            {
-                exception = e;
-            }
-
-            // assert
-            Assert.IsNotNull(exception);
-            Assert.IsTrue(exception.Message.Contains("more than once"));
-        }
-
-        [TestMethod]
         public void Encrypting_WithoutKeyValueSet_ThrowsException()
         {
             // arrange
@@ -91,18 +67,15 @@
         }
 
 		[TestMethod]
-        public void WhenSettingKeyVectorPairAgain_ThrowsException()
-        {
+		public void Decrypting_WithoutKeyValuePairSet_ThrowsException()
+		{
 			// arrange
 			var exception = default(InvalidOperationException);
-            (var key, var vector) = Guint.GenerateKeyAndInitializationVector();
-
-			Guint.Set(key, vector);
 
 			// act
 			try
 			{
-				Guint.Set(key, vector);
+				Guid.NewGuid().DecryptToInt();
 			}
 			catch (InvalidOperationException e)
 			{
@@ -111,7 +84,47 @@
 
 			// assert
 			Assert.IsNotNull(exception);
-			Assert.IsTrue(exception.Message.Contains("more than once"));
+			Assert.IsTrue(exception.Message.Contains("not been set"));
+		}
+
+		[TestMethod]
+        public void WhenSettingTheSameKeyVectorPairAgain_DoesNotThrowException()
+        {
+			// arrange
+            (var key, var vector) = Guint.GenerateKeyAndInitializationVector();
+
+			Guint.Set(key, vector);
+
+			// act
+			Guint.Set(key, vector);
+
+            // assert
+            { }
+		}
+
+		[TestMethod]
+		public void WhenSettingDifferentKeyVectorPair_ThrowsException()
+		{
+			// arrange
+			var exception = default(InvalidOperationException);
+			(var key1, var vector1) = Guint.GenerateKeyAndInitializationVector();
+			(var key2, var vector2) = Guint.GenerateKeyAndInitializationVector();
+
+			Guint.Set(key1, vector1);
+
+			// act
+			try
+			{
+				Guint.Set(key2, vector2);
+			}
+			catch (InvalidOperationException e)
+			{
+				exception = e;
+			}
+
+			// assert
+			Assert.IsNotNull(exception);
+			Assert.IsTrue(exception.Message.Contains("cannot be changed"));
 		}
 	}
 }
