@@ -23,7 +23,7 @@ In other words: *Have your cake and eat it too!*
 ```
 public Task<IHttpActionResult> Get(Guid id)
 {
-	var i = id.DecryptToInt(key, vector);
+	var i = id.ToInt(key, vector);
 
 	return i.HasValue
 		? Ok(this.carService.Get(i))

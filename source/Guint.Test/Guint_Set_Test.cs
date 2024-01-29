@@ -46,7 +46,7 @@
         }
 
         [TestMethod]
-        public void Encrypting_WithoutKeyValueSet_ThrowsException()
+        public void ToGuid_WithoutKeyValueSet_ThrowsException()
         {
             // arrange
             var exception = default(InvalidOperationException);
@@ -54,7 +54,7 @@
             // act
             try
             {
-                123.EncryptIntoGuid();
+                123.ToGuid();
             }
             catch (InvalidOperationException e)
             {
@@ -67,7 +67,7 @@
         }
 
 		[TestMethod]
-		public void Decrypting_WithoutKeyValuePairSet_ThrowsException()
+		public void ToInt_WithoutKeyValuePairSet_ThrowsException()
 		{
 			// arrange
 			var exception = default(InvalidOperationException);
@@ -75,7 +75,7 @@
 			// act
 			try
 			{
-				Guid.NewGuid().DecryptToInt();
+				Guid.NewGuid().ToInt();
 			}
 			catch (InvalidOperationException e)
 			{

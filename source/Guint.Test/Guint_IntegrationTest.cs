@@ -23,8 +23,8 @@
 
             // act
             var output = input
-				.EncryptIntoGuid(key, vector)
-				.DecryptToInt(key, vector);
+				.ToGuid(key, vector)
+				.ToInt(key, vector);
 
             // assert
             Assert.AreEqual(input, output);
@@ -39,8 +39,8 @@
 
 			// act
 			var output = input
-				.EncryptIntoGuid(key, vector)
-				.DecryptToInt(key, vector);
+				.ToGuid(key, vector)
+				.ToInt(key, vector);
 
 			// assert
 			Assert.AreEqual(input, output);
@@ -55,8 +55,8 @@
 
 			// act
 			var output = input
-				.EncryptIntoGuid(key, vector)
-				.DecryptToInt(key, vector);
+				.ToGuid(key, vector)
+				.ToInt(key, vector);
 
 			// assert
 			Assert.AreEqual(input, output);
@@ -73,8 +73,8 @@
 
 			// act
 			var output = input
-				.EncryptIntoGuid()
-				.DecryptToInt();
+				.ToGuid()
+				.ToInt();
 
 			// assert
 			output.Switch(
@@ -93,8 +93,8 @@
 
 			// act
 			var output = input
-				.EncryptIntoGuid()
-				.DecryptToInt();
+				.ToGuid()
+				.ToInt();
 
 			// assert
 			output.Switch(
@@ -113,8 +113,8 @@
 
 			// act
 			var output = input
-				.EncryptIntoGuid()
-				.DecryptToInt();
+				.ToGuid()
+				.ToInt();
 
 			// assert
 			output.Switch(

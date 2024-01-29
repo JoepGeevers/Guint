@@ -31,7 +31,7 @@
         internal static Aes GetAlgorithm() => Aes.Create();
 
 
-        public static Guid EncryptIntoGuid(this Int32 input, string key, string vector)
+        public static Guid ToGuid(this Int32 input, string key, string vector)
         {
             using (var algorithm = Guint.GetAlgorithm())
             using (var encryptor = algorithm.CreateEncryptor(Convert.FromBase64String(key), Convert.FromBase64String(vector)))
@@ -50,7 +50,7 @@
             }
         }
 
-		public static OneOf<int, NotFound> DecryptToInt(this Guid guid, string key, string vector)
+		public static OneOf<int, NotFound> ToInt(this Guid guid, string key, string vector)
         {
             using (var algorithm = Guint.GetAlgorithm())
             using (var decryptor = algorithm.CreateDecryptor(Convert.FromBase64String(key), Convert.FromBase64String(vector)))
@@ -108,7 +108,7 @@
 
             try
             {
-                EncryptIntoGuid(123, key, vector);
+                ToGuid(123, key, vector);
             }
             catch(Exception e)
             {
@@ -125,14 +125,14 @@
             Guint.vector = vector;
         }
 
-		public static Guid EncryptIntoGuid(this int input)
+		public static Guid ToGuid(this int input)
 			=> key == null || vector == null
-				? throw new InvalidOperationException("Cannot `EncryptIntoGuid` because key and vector have not been set")
-				: input.EncryptIntoGuid(key, vector);
+				? throw new InvalidOperationException("Cannot `ToGuid` because key and vector have not been set")
+				: input.ToGuid(key, vector);
 
-		public static OneOf<int, NotFound> DecryptToInt(this Guid input)
+		public static OneOf<int, NotFound> ToInt(this Guid input)
 			=> key == null || vector == null
-				? throw new InvalidOperationException("Cannot `DecryptToInt` because key and vector have not been set")
-				: input.DecryptToInt(key, vector);
+				? throw new InvalidOperationException("Cannot `ToInt` because key and vector have not been set")
+				: input.ToInt(key, vector);
 	}
 }
