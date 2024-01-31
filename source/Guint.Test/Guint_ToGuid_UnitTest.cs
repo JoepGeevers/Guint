@@ -7,7 +7,7 @@
 	[TestClass]
 	public class Guint_ToGuid_UnitTest
     {
-		// todo: validate key and vector whenever they are used
+		// todo: 6 validate key and vector whenever they are used
 		// todo: 1 throw a nice exception when the key and vector are null for both toint and toguid
 		// todo: 2 throw a nice exception when key and vector are not base64 both toint and toguid
 		// todo: 3 throw a nice exception when key and vector are not whatever they are supposed to be both toint and toguid

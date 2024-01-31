@@ -30,8 +30,8 @@
 
 		internal static Aes GetAlgorithm() => Aes.Create();
 
-		// todo: put DecryptToInt back
-		// todo: put all these methods in order maybe
+		// todo: 7 put DecryptToInt back and put both under test after we have put the underlaying methods completely under test
+		// todo: 8 put all these methods in order maybe
 		[Obsolete("Use `ToGuid` instead")]
 		public static Guid EncryptIntoGuid(this Int32 input, string key, string vector) => input.ToGuid(key, vector);
 
