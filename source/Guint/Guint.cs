@@ -16,7 +16,7 @@
 
 		public static (string Key, string InitializationVector) GenerateKeyAndInitializationVector()
 		{
-			using (var algorithm = GetAlgorithm())
+			using (var algorithm = Guint.GetAlgorithm())
 			{
 				algorithm.GenerateKey();
 				algorithm.GenerateIV();
@@ -55,31 +55,31 @@
 		}
 
 		[Obsolete("Please use ToInt instead")]
-		public static int? DecryptToInt(this Guid input, string key, string vector)
+		public static Int32? DecryptToInt(this Guid input, string key, string vector)
 			=> input.ToInt(key, vector)
 				.Match(
 					i => i,
-					notfound => default(int?));
+					notfound => default(Int32?));
 
-		public static OneOf<int, NotFound> ToInt(this Guid guid, string key, string vector)
+		public static OneOf<Int32, NotFound> ToInt(this Guid guid, string key, string vector)
 		{
 			using (var algorithm = Guint.GetAlgorithm())
 			using (var decryptor = algorithm.CreateDecryptor(Convert.FromBase64String(key), Convert.FromBase64String(vector)))
 			{
 				return Crypt(guid.ToByteArray(), decryptor)
-					.Match<OneOf<int, NotFound>>(
+					.Match<OneOf<Int32, NotFound>>(
 						bytes => BitConverter.ToInt32(bytes, 0),
 						notfound => notfound);
 			}
 		}
 
-		public static int ToIntOrDefault(this Guid guid, string key, string vector)
+		public static Int32 ToIntOrDefault(this Guid guid, string key, string vector)
 			=> ToInt(guid, key, vector)
 				.Match(
 					i => i,
-					notfound => default(int));
+					notfound => default(Int32));
 
-		public static int ToIntOrExplode(this Guid guid, string key, string vector)
+		public static Int32 ToIntOrExplode(this Guid guid, string key, string vector)
 			=> ToInt(guid, key, vector)
 				.Match(
 					i => i,
@@ -148,20 +148,20 @@
 			Guint.vector = vector;
 		}
 
-		public static Guid ToGuid(this int input)
+		public static Guid ToGuid(this Int32 input)
 			=> key == null || vector == null
 				? throw new InvalidOperationException("Cannot `ToGuid` because key and vector have not been initialized")
 				: input.ToGuid(key, vector);
 
-		public static OneOf<int, NotFound> ToInt(this Guid input)
+		public static OneOf<Int32, NotFound> ToInt(this Guid input)
 			=> key == null || vector == null
 				? throw new InvalidOperationException("Cannot `ToInt` because key and vector have not been initialized")
 				: input.ToInt(key, vector);
 
 		// todo 4: create ToIntOrDefault the nicely uses other methods for key vector checks 
-		public static int ToIntOrDefault(this Guid input) => input.ToIntOrDefault(key, vector);
+		public static Int32 ToIntOrDefault(this Guid input) => input.ToIntOrDefault(key, vector);
 
 		// todo 5: create ToIntOrExplode the nicely uses other methods for key vector checks 
-		public static int ToIntOrExplode(this Guid input) => input.ToIntOrExplode(key, vector);
+		public static Int32 ToIntOrExplode(this Guid input) => input.ToIntOrExplode(key, vector);
 	}
 }
