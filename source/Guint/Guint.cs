@@ -47,7 +47,7 @@
 					Array.Reverse(bytes);
 				}
 
-				return Crypt(bytes, encryptor)
+				return Guint.Crypt(bytes, encryptor)
 					.Match(
 						b => new Guid(b),
 						notfound => throw new InvalidOperationException("This error should really, really never happen, because any 32-bit int fits into a 128-bit Guid. Call me!"));
@@ -66,7 +66,7 @@
 			using (var algorithm = Guint.GetAlgorithm())
 			using (var decryptor = algorithm.CreateDecryptor(Convert.FromBase64String(key), Convert.FromBase64String(vector)))
 			{
-				return Crypt(guid.ToByteArray(), decryptor)
+				return Guint.Crypt(guid.ToByteArray(), decryptor)
 					.Match<OneOf<Int32, NotFound>>(
 						bytes => BitConverter.ToInt32(bytes, 0),
 						notfound => notfound);
@@ -74,13 +74,13 @@
 		}
 
 		public static Int32 ToIntOrDefault(this Guid guid, string key, string vector)
-			=> ToInt(guid, key, vector)
+			=> Guint.ToInt(guid, key, vector)
 				.Match(
 					i => i,
 					notfound => default(Int32));
 
 		public static Int32 ToIntOrExplode(this Guid guid, string key, string vector)
-			=> ToInt(guid, key, vector)
+			=> Guint.ToInt(guid, key, vector)
 				.Match(
 					i => i,
 					notfound => throw new Exception()); // what kind of exception do we want to throw here?
@@ -131,7 +131,7 @@
 
 			try
 			{
-				ToGuid(123, key, vector);
+				Guint.ToGuid(123, key, vector);
 			}
 			catch (Exception e)
 			{
