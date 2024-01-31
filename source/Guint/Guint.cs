@@ -32,7 +32,7 @@
 
 		// todo: put DecryptToInt back
 		// todo: put all these methods in order maybe
-		[Obsolete("Please use ToGuid instead")]
+		[Obsolete("Use `ToGuid` instead")]
 		public static Guid EncryptIntoGuid(this Int32 input, string key, string vector) => input.ToGuid(key, vector);
 
 		public static Guid ToGuid(this Int32 input, string key, string vector)
@@ -54,7 +54,7 @@
 			}
 		}
 
-		[Obsolete("Please use ToInt instead")]
+		[Obsolete("Use `ToInt`, `ToIntOrDefault` or `ToIntOrExplode` instead")]
 		public static Int32? DecryptToInt(this Guid input, string key, string vector)
 			=> input.ToInt(key, vector)
 				.Match(
