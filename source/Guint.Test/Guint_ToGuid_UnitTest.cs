@@ -89,6 +89,75 @@
 		}
 
 		[TestMethod]
+		public void ToGuid_WithSpecifiedKeyVector_WhenVectorIsNull_ThrowsException()
+		{
+			// arrange
+			ArgumentNullException? captivum = null;
+			(var key, var vector) = ("wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=", default(string));
+
+			// act
+			try
+			{
+				var guid = 58008.ToGuid(key, vector);
+			}
+			catch (ArgumentNullException e)
+			{
+				captivum = e;
+			}
+
+			// assert
+			Assert.IsNotNull(captivum);
+			Assert.AreEqual("vector", captivum.ParamName);
+			Assert.IsTrue(captivum.Message.Contains("Value cannot be null"));
+		}
+
+		[TestMethod]
+		public void ToGuid_WithSpecifiedKeyVector_WhenVectorIsNotBase64_ThrowsException()
+		{
+			// arrange
+			ArgumentException? captivum = null;
+			(var key, var vector) = ("wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=", "I'm not base64");
+
+			// act
+			try
+			{
+				var guid = 58008.ToGuid(key, vector);
+			}
+			catch (ArgumentException e)
+			{
+				captivum = e;
+			}
+
+			// assert
+			Assert.IsNotNull(captivum);
+			Assert.AreEqual("vector", captivum.ParamName);
+			Assert.IsTrue(captivum.Message.Contains("Value must be a base 64 encoded byte[16]"));
+		}
+
+		[TestMethod]
+		public void ToGuid_WithSpecifiedKeyVector_WhenVectorIsNotCorrectSize_ThrowsException()
+		{
+			// arrange
+			ArgumentException? captivum = null;
+			(var key, var vector) = ("wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=", "wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=");
+
+			// act
+			try
+			{
+				var guid = 58008.ToGuid(key, vector);
+			}
+			catch (ArgumentException e)
+			{
+				captivum = e;
+			}
+
+			// assert
+			Assert.IsNotNull(captivum);
+			Assert.AreEqual("vector", captivum.ParamName);
+			Assert.IsTrue(captivum.Message.Contains("Value must be a base 64 encoded byte[16]"));
+		}
+
+		[TestMethod]
 		public void ToGuid_WithSpecifiedKeyVector_IsStable()
 		{
 			// arrange

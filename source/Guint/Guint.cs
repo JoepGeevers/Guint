@@ -38,9 +38,10 @@
 		public static Guid ToGuid(this Int32 input, string key, string vector)
 		{
 			var rgbKey = Guint.GetRgbKey(key);
+			var rgbVector = Guint.GetRgbVector(vector);
 
 			using (var algorithm = Guint.GetAlgorithm())
-			using (var encryptor = algorithm.CreateEncryptor(rgbKey, Convert.FromBase64String(vector)))
+			using (var encryptor = algorithm.CreateEncryptor(rgbKey, rgbVector))
 			{
 				var bytes = BitConverter.GetBytes(input);
 
@@ -57,6 +58,7 @@
 		}
 
 		private static byte[] GetRgbKey(string key) => GetRgb(key, "key", 32);
+		private static byte[] GetRgbVector(string vector) => GetRgb(vector, "vector", 16);
 
 		private static byte[] GetRgb(string input, string name, int length)
 		{
