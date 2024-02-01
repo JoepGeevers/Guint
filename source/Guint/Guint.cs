@@ -92,8 +92,11 @@
 
 		public static OneOf<Int32, NotFound> ToInt(this Guid guid, string key, string vector)
 		{
+			var rgbKey = Guint.GetRgbKey(key);
+			var rgbVector = Guint.GetRgbVector(vector);
+
 			using (var algorithm = Guint.GetAlgorithm())
-			using (var decryptor = algorithm.CreateDecryptor(Convert.FromBase64String(key), Convert.FromBase64String(vector)))
+			using (var decryptor = algorithm.CreateDecryptor(rgbKey, rgbVector))
 			{
 				return Guint.Crypt(guid.ToByteArray(), decryptor)
 					.Match<OneOf<Int32, NotFound>>(
@@ -148,6 +151,7 @@
 
 		public static void Set(string key, string vector)
 		{
+			// todo: extract methods to make intent more clear
 			if (Guint.key == key && Guint.vector == vector)
 			{
 				return;
@@ -158,20 +162,7 @@
 				throw new InvalidOperationException("Key and vector cannot be changed");
 			}
 
-			try
-			{
-				Guint.ToGuid(123, key, vector);
-			}
-			catch (Exception e)
-			{
-				throw new ArgumentException("Specified key and vector are invalid. See inner exception for more details", e)
-				{
-					Data = {
-						{ "Key", key },
-						{ "Vector", vector },
-					},
-				};
-			}
+			Guint.ToGuid(123, key, vector);
 
 			Guint.key = key;
 			Guint.vector = vector;

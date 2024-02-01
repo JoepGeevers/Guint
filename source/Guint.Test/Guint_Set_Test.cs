@@ -14,56 +14,142 @@
             Guint.vector = null;
         }
 
-        [TestMethod]
-        public void Setting_InvalidKeyVectorPair_ThrowsException()
-        {
-            // arrange
-            var exception = default(ArgumentException);
-            var key = "iEoZxvDg38zjvdUF33lo1A==";
-            var vector = "axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=";
-
-            // act
-            try
-            {
-                Guint.Set(key, vector);
-            }
-            catch (ArgumentException e)
-            {
-                exception = e;
-            }
-
-            // assert
-            Assert.IsNotNull(exception);
-            Assert.IsTrue(exception.Message.Contains("invalid"));
-
-            Assert.IsTrue(exception.Data.Contains("Key"));
-            Assert.AreEqual(exception.Data["Key"], key);
-
-            Assert.IsTrue(exception.Data.Contains("Vector"));
-            Assert.AreEqual(exception.Data["Vector"], vector);
-
-            Assert.IsNotNull(exception.InnerException);
-        }
-
 		[TestMethod]
-		public void ToInt_WithoutKeyValuePairSet_ThrowsException()
+		public void Set_WhenKeyIsNull_ThrowsException()
 		{
 			// arrange
-			var exception = default(InvalidOperationException);
+			ArgumentNullException? captivum = null;
+			(var key, var vector) = (default(string), "NSqvP1Acyge252v+8w2HyA==");
 
 			// act
 			try
 			{
-				Guid.NewGuid().ToInt();
+				Guint.Set(key, vector);
 			}
-			catch (InvalidOperationException e)
+			catch (ArgumentNullException e)
 			{
-				exception = e;
+				captivum = e;
 			}
 
 			// assert
-			Assert.IsNotNull(exception);
-			Assert.IsTrue(exception.Message.Contains("not been initialized"));
+			Assert.IsNotNull(captivum);
+			Assert.AreEqual("key", captivum.ParamName);
+			Assert.IsTrue(captivum.Message.Contains("Value cannot be null"));
+		}
+
+		[TestMethod]
+		public void Set_WhenKeyIsNotBase64_ThrowsException()
+		{
+			// arrange
+			ArgumentException? captivum = null;
+			(var key, var vector) = ("I'm not base64", "NSqvP1Acyge252v+8w2HyA==");
+
+			// act
+			try
+			{
+				Guint.Set(key, vector);
+			}
+			catch (ArgumentException e)
+			{
+				captivum = e;
+			}
+
+			// assert
+			Assert.IsNotNull(captivum);
+			Assert.AreEqual("key", captivum.ParamName);
+			Assert.IsTrue(captivum.Message.Contains("Value must be a base 64 encoded byte[32]"));
+		}
+
+		[TestMethod]
+		public void Set_WhenKeyIsNotCorrectSize_ThrowsException()
+		{
+			// arrange
+			ArgumentException? captivum = null;
+			(var key, var vector) = ("NSqvP1Acyge252v+8w2HyA==", "NSqvP1Acyge252v+8w2HyA==");
+
+			// act
+			try
+			{
+				Guint.Set(key, vector);
+			}
+			catch (ArgumentException e)
+			{
+				captivum = e;
+			}
+
+			// assert
+			Assert.IsNotNull(captivum);
+			Assert.AreEqual("key", captivum.ParamName);
+			Assert.IsTrue(captivum.Message.Contains("Value must be a base 64 encoded byte[32]"));
+		}
+
+		[TestMethod]
+		public void Set_WhenVectorIsNull_ThrowsException()
+		{
+			// arrange
+			ArgumentNullException? captivum = null;
+			(var key, var vector) = ("wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=", default(string));
+
+			// act
+			try
+			{
+				Guint.Set(key, vector);
+			}
+			catch (ArgumentNullException e)
+			{
+				captivum = e;
+			}
+
+			// assert
+			Assert.IsNotNull(captivum);
+			Assert.AreEqual("vector", captivum.ParamName);
+			Assert.IsTrue(captivum.Message.Contains("Value cannot be null"));
+		}
+
+		[TestMethod]
+		public void Set_WhenVectorIsNotBase64_ThrowsException()
+		{
+			// arrange
+			ArgumentException? captivum = null;
+			(var key, var vector) = ("wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=", "I'm not base64");
+
+			// act
+			try
+			{
+				Guint.Set(key, vector);
+			}
+			catch (ArgumentException e)
+			{
+				captivum = e;
+			}
+
+			// assert
+			Assert.IsNotNull(captivum);
+			Assert.AreEqual("vector", captivum.ParamName);
+			Assert.IsTrue(captivum.Message.Contains("Value must be a base 64 encoded byte[16]"));
+		}
+
+		[TestMethod]
+		public void Set_WhenVectorIsNotCorrectSize_ThrowsException()
+		{
+			// arrange
+			ArgumentException? captivum = null;
+			(var key, var vector) = ("wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=", "wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=");
+
+			// act
+			try
+			{
+				Guint.Set(key, vector);
+			}
+			catch (ArgumentException e)
+			{
+				captivum = e;
+			}
+
+			// assert
+			Assert.IsNotNull(captivum);
+			Assert.AreEqual("vector", captivum.ParamName);
+			Assert.IsTrue(captivum.Message.Contains("Value must be a base 64 encoded byte[16]"));
 		}
 
 		[TestMethod]
@@ -85,7 +171,7 @@
 		public void WhenSettingDifferentKeyVectorPair_ThrowsException()
 		{
 			// arrange
-			var exception = default(InvalidOperationException);
+			var captivum = default(InvalidOperationException);
 			(var key1, var vector1) = Guint.GenerateKeyAndInitializationVector();
 			(var key2, var vector2) = Guint.GenerateKeyAndInitializationVector();
 
@@ -98,12 +184,12 @@
 			}
 			catch (InvalidOperationException e)
 			{
-				exception = e;
+				captivum = e;
 			}
 
 			// assert
-			Assert.IsNotNull(exception);
-			Assert.IsTrue(exception.Message.Contains("cannot be changed"));
+			Assert.IsNotNull(captivum);
+			Assert.IsTrue(captivum.Message.Contains("cannot be changed"));
 		}
 	}
 }
