@@ -1,12 +1,10 @@
 ﻿namespace Guint.Test
 {
 	using System;
-	using System.Diagnostics.CodeAnalysis;
 
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
-	[ExcludeFromCodeCoverage] // todo: make this work for test assemblies
 	public class Guint_IntegrationTest
     {
 		[TestInitialize]

@@ -1,12 +1,10 @@
 ﻿namespace Guint.Test.Framework
 {
     using System;
-	using System.Diagnostics.CodeAnalysis;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-	[ExcludeFromCodeCoverage]
 	public class Guint_KeyVector_ToInt_UnitTest
     {
         [TestMethod]
