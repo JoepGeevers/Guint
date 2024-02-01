@@ -150,22 +150,30 @@
 
 		public static void Set(string key, string vector)
 		{
-			// todo: extract methods to make intent more clear
+			Guint.ValidateInitialization(key, vector);
+
+			Guint.key = key;
+			Guint.vector = vector;
+		}
+
+		private static void ValidateInitialization(string key, string vector)
+		{
+			if (Guint.key == null || Guint.vector == null)
+			{
+				Guint.Validate(key, vector);
+
+				return;
+			}
+
 			if (Guint.key == key && Guint.vector == vector)
 			{
 				return;
 			}
 
-			if (Guint.key != null || Guint.vector != null)
-			{
-				throw new InvalidOperationException("Key and vector cannot be changed");
-			}
-
-			Guint.ToGuid(123, key, vector);
-
-			Guint.key = key;
-			Guint.vector = vector;
+			throw new InvalidOperationException("Key and vector cannot be changed");
 		}
+
+		private static void Validate(string key, string vector) => Guint.ToGuid(123456789, key, vector);
 
 		public static Guid ToGuid(this Int32 input)
 			=> key == null || vector == null
