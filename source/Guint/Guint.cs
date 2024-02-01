@@ -36,24 +36,24 @@
 		}
 
 		public static Guid ToGuid(this Int32 input)
-			=> key == null || vector == null
+			=> Guint.key == null || Guint.vector == null
 				? throw new InvalidOperationException("Cannot `ToGuid` because key and vector have not been initialized")
-				: input.ToGuid(key, vector);
+				: input.ToGuid(Guint.key, Guint.vector);
 
 		public static OneOf<Int32, NotFound> ToInt(this Guid input)
-			=> key == null || vector == null
+			=> Guint.key == null || Guint.vector == null
 				? throw new InvalidOperationException("Cannot `ToInt` because key and vector have not been initialized")
-				: input.ToInt(key, vector);
+				: input.ToInt(Guint.key, Guint.vector);
 
 		public static Int32 ToIntOrDefault(this Guid input)
-			=> key == null || vector == null
+			=> Guint.key == null || Guint.vector == null
 				? throw new InvalidOperationException("Cannot `ToIntOrDefault` because key and vector have not been initialized")
-				: input.ToIntOrDefault(key, vector);
+				: input.ToIntOrDefault(Guint.key, Guint.vector);
 
 		public static Int32 ToIntOrExplode(this Guid input)
-			=> key == null || vector == null
+			=> Guint.key == null || Guint.vector == null
 				? throw new InvalidOperationException("Cannot `ToIntOrExplode` because key and vector have not been initialized")
-				: input.ToIntOrExplode(key, vector);
+				: input.ToIntOrExplode(Guint.key, Guint.vector);
 
 		private static Guid ToGuid(this Int32 input, string key, string vector)
 		{
@@ -105,11 +105,11 @@
 					notfound => throw new InvalidOperationException("Could not convert Guid to an Int32 with the specified key and vector"));
 
 		[Obsolete("Use `ToGuid` instead")]
-		public static Guid EncryptIntoGuid(this Int32 input, string key, string vector) => input.ToGuid(key, vector);
+		public static Guid EncryptIntoGuid(this Int32 input, string key, string vector) => input.ToGuid(Guint.key, Guint.vector);
 
 		[Obsolete("Use `ToInt`, `ToIntOrDefault` or `ToIntOrExplode` instead")]
 		public static Int32? DecryptToInt(this Guid input, string key, string vector)
-			=> input.ToInt(key, vector)
+			=> input.ToInt(Guint.key, Guint.vector)
 				.Match(
 					i => i,
 					notfound => default(Int32?));
