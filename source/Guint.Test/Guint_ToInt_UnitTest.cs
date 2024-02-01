@@ -1,10 +1,12 @@
 ﻿namespace Guint.Test
 {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
+	[ExcludeFromCodeCoverage]
 	public class Guint_ToInt_UnitTest
     {
 		// put all endpoints under the same tests, that use key vector either passed or initialized

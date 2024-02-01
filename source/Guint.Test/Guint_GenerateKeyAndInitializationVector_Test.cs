@@ -1,11 +1,13 @@
 namespace Guint.Test
 {
-    using System.Linq;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Linq;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class Guint_GenerateKeyAndInitializationVector_Test
+	[ExcludeFromCodeCoverage]
+	public class Guint_GenerateKeyAndInitializationVector_Test
     {
         [TestMethod]
         public void GeneratedKeyAndVectorAreAlwaysDifferentAndWork()

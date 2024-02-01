@@ -1,23 +1,16 @@
 ﻿namespace Guint.Test
 {
-    using System;
+	using System;
 	using System.Diagnostics.CodeAnalysis;
 
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    [TestClass]
+	[TestClass]
 	[ExcludeFromCodeCoverage]
-	public class Guint_Set_Test
+	public class Guint_EncryptIntoGuid_UnitTest
     {
-        [TestInitialize]
-        public void TestInitialize()
-        {
-            Guint.key = null;
-            Guint.vector = null;
-        }
-
 		[TestMethod]
-		public void Set_WhenKeyIsNull_ThrowsException()
+		public void EncryptIntoGuid_WhenKeyIsNull_ThrowsException()
 		{
 			// arrange
 			ArgumentNullException? captivum = null;
@@ -26,7 +19,7 @@
 			// act
 			try
 			{
-				Guint.Set(key, vector);
+				_ = 58008.EncryptIntoGuid(key, vector);
 			}
 			catch (ArgumentNullException e)
 			{
@@ -40,7 +33,7 @@
 		}
 
 		[TestMethod]
-		public void Set_WhenKeyIsNotBase64_ThrowsException()
+		public void EncryptIntoGuid_WhenKeyIsNotBase64_ThrowsException()
 		{
 			// arrange
 			ArgumentException? captivum = null;
@@ -49,7 +42,7 @@
 			// act
 			try
 			{
-				Guint.Set(key, vector);
+				_ = 58008.EncryptIntoGuid(key, vector);
 			}
 			catch (ArgumentException e)
 			{
@@ -63,7 +56,7 @@
 		}
 
 		[TestMethod]
-		public void Set_WhenKeyIsNotCorrectSize_ThrowsException()
+		public void EncryptIntoGuid_WhenKeyIsNotCorrectSize_ThrowsException()
 		{
 			// arrange
 			ArgumentException? captivum = null;
@@ -72,7 +65,7 @@
 			// act
 			try
 			{
-				Guint.Set(key, vector);
+				_ = 58008.EncryptIntoGuid(key, vector);
 			}
 			catch (ArgumentException e)
 			{
@@ -86,7 +79,7 @@
 		}
 
 		[TestMethod]
-		public void Set_WhenVectorIsNull_ThrowsException()
+		public void EncryptIntoGuid_WhenVectorIsNull_ThrowsException()
 		{
 			// arrange
 			ArgumentNullException? captivum = null;
@@ -95,7 +88,7 @@
 			// act
 			try
 			{
-				Guint.Set(key, vector);
+				_ = 58008.EncryptIntoGuid(key, vector);
 			}
 			catch (ArgumentNullException e)
 			{
@@ -109,7 +102,7 @@
 		}
 
 		[TestMethod]
-		public void Set_WhenVectorIsNotBase64_ThrowsException()
+		public void EncryptIntoGuid_WhenVectorIsNotBase64_ThrowsException()
 		{
 			// arrange
 			ArgumentException? captivum = null;
@@ -118,7 +111,7 @@
 			// act
 			try
 			{
-				Guint.Set(key, vector);
+				_ = 58008.EncryptIntoGuid(key, vector);
 			}
 			catch (ArgumentException e)
 			{
@@ -132,7 +125,7 @@
 		}
 
 		[TestMethod]
-		public void Set_WhenVectorIsNotCorrectSize_ThrowsException()
+		public void EncryptIntoGuid_WhenVectorIsNotCorrectSize_ThrowsException()
 		{
 			// arrange
 			ArgumentException? captivum = null;
@@ -141,7 +134,7 @@
 			// act
 			try
 			{
-				Guint.Set(key, vector);
+				_ = 58008.EncryptIntoGuid(key, vector);
 			}
 			catch (ArgumentException e)
 			{
@@ -155,43 +148,17 @@
 		}
 
 		[TestMethod]
-        public void WhenSettingTheSameKeyVectorPairAgain_DoesNotThrowException()
-        {
-			// arrange
-            (var key, var vector) = Guint.GenerateKeyAndInitializationVector();
-
-			Guint.Set(key, vector);
-
-			// act
-			Guint.Set(key, vector);
-
-            // assert
-            { }
-		}
-
-		[TestMethod]
-		public void WhenSettingDifferentKeyVectorPair_ThrowsException()
+		public void EncryptIntoGuid_IsStable()
 		{
 			// arrange
-			var captivum = default(InvalidOperationException);
-			(var key1, var vector1) = Guint.GenerateKeyAndInitializationVector();
-			(var key2, var vector2) = Guint.GenerateKeyAndInitializationVector();
-
-			Guint.Set(key1, vector1);
+			var input = 58008;
+			(var key, var vector) = ("wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=", "NSqvP1Acyge252v+8w2HyA==");
 
 			// act
-			try
-			{
-				Guint.Set(key2, vector2);
-			}
-			catch (InvalidOperationException e)
-			{
-				captivum = e;
-			}
+			var guid = input.EncryptIntoGuid(key, vector);
 
 			// assert
-			Assert.IsNotNull(captivum);
-			Assert.IsTrue(captivum.Message.Contains("cannot be changed"));
+			Assert.AreEqual(new Guid("aa870058-6b5b-9a61-f58e-c20bb550bfd3"), guid);
 		}
 	}
 }

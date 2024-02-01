@@ -1,11 +1,13 @@
 ﻿namespace Guint.Test.Framework
 {
     using System;
+	using System.Diagnostics.CodeAnalysis;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class Guint_KeyVector_ToInt_UnitTest
+	[ExcludeFromCodeCoverage]
+	public class Guint_KeyVector_ToInt_UnitTest
     {
         [TestMethod]
         public void ToInt_RandomGuid_DoesNotExplode_InDotNetFramework()
