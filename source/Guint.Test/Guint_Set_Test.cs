@@ -45,27 +45,6 @@
             Assert.IsNotNull(exception.InnerException);
         }
 
-        [TestMethod]
-        public void ToGuid_WithoutKeyValueSet_ThrowsException()
-        {
-            // arrange
-            var exception = default(InvalidOperationException);
-
-            // act
-            try
-            {
-                123.ToGuid();
-            }
-            catch (InvalidOperationException e)
-            {
-                exception = e;
-            }
-
-            // assert
-            Assert.IsNotNull(exception);
-            Assert.IsTrue(exception.Message.Contains("not been set"));
-        }
-
 		[TestMethod]
 		public void ToInt_WithoutKeyValuePairSet_ThrowsException()
 		{
@@ -84,7 +63,7 @@
 
 			// assert
 			Assert.IsNotNull(exception);
-			Assert.IsTrue(exception.Message.Contains("not been set"));
+			Assert.IsTrue(exception.Message.Contains("not been initialized"));
 		}
 
 		[TestMethod]

@@ -37,8 +37,10 @@
 
 		public static Guid ToGuid(this Int32 input, string key, string vector)
 		{
+			var rgbKey = Guint.GetRgbKey(key);
+
 			using (var algorithm = Guint.GetAlgorithm())
-			using (var encryptor = algorithm.CreateEncryptor(Convert.FromBase64String(key), Convert.FromBase64String(vector)))
+			using (var encryptor = algorithm.CreateEncryptor(rgbKey, Convert.FromBase64String(vector)))
 			{
 				var bytes = BitConverter.GetBytes(input);
 
@@ -52,6 +54,31 @@
 						b => new Guid(b),
 						notfound => throw new InvalidOperationException("This error should really, really never happen, because any 32-bit int fits into a 128-bit Guid. Call me!"));
 			}
+		}
+
+		private static byte[] GetRgbKey(string key) => GetRgb(key, "key", 32);
+
+		private static byte[] GetRgb(string input, string name, int length)
+		{
+			if (input == null)
+			{
+				throw new ArgumentNullException(name);
+			}
+
+			try
+			{
+				var bytes = Convert.FromBase64String(input);
+
+				if (bytes.Length == length)
+				{
+					return bytes;
+				}
+			}
+			catch (FormatException)
+			{
+			}
+
+			throw new ArgumentException($"Value must be a base 64 encoded byte[{length}]", name);
 		}
 
 		[Obsolete("Use `ToInt`, `ToIntOrDefault` or `ToIntOrExplode` instead")]

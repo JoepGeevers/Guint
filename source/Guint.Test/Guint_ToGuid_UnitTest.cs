@@ -20,6 +20,75 @@
 		}
 
 		[TestMethod]
+		public void ToGuid_WithSpecifiedKeyVector_WhenKeyIsNull_ThrowsException()
+		{
+			// arrange
+			ArgumentNullException? captivum = null;
+			(var key, var vector) = (default(string), "NSqvP1Acyge252v+8w2HyA==");
+
+			// act
+			try
+			{
+				var guid = 58008.ToGuid(key, vector);
+			}
+			catch (ArgumentNullException e)
+			{
+				captivum = e;
+			}
+
+			// assert
+			Assert.IsNotNull(captivum);
+			Assert.AreEqual("key", captivum.ParamName);
+			Assert.IsTrue(captivum.Message.Contains("Value cannot be null"));
+		}
+
+		[TestMethod]
+		public void ToGuid_WithSpecifiedKeyVector_WhenKeyIsNotBase64_ThrowsException()
+		{
+			// arrange
+			ArgumentException? captivum = null;
+			(var key, var vector) = ("I'm not base64", "NSqvP1Acyge252v+8w2HyA==");
+
+			// act
+			try
+			{
+				var guid = 58008.ToGuid(key, vector);
+			}
+			catch (ArgumentException e)
+			{
+				captivum = e;
+			}
+
+			// assert
+			Assert.IsNotNull(captivum);
+			Assert.AreEqual("key", captivum.ParamName);
+			Assert.IsTrue(captivum.Message.Contains("Value must be a base 64 encoded byte[32]"));
+		}
+
+		[TestMethod]
+		public void ToGuid_WithSpecifiedKeyVector_WhenKeyIsNotCorrectSize_ThrowsException()
+		{
+			// arrange
+			ArgumentException? captivum = null;
+			(var key, var vector) = ("NSqvP1Acyge252v+8w2HyA==", "NSqvP1Acyge252v+8w2HyA==");
+
+			// act
+			try
+			{
+				var guid = 58008.ToGuid(key, vector);
+			}
+			catch (ArgumentException e)
+			{
+				captivum = e;
+			}
+
+			// assert
+			Assert.IsNotNull(captivum);
+			Assert.AreEqual("key", captivum.ParamName);
+			Assert.IsTrue(captivum.Message.Contains("Value must be a base 64 encoded byte[32]"));
+		}
+
+		[TestMethod]
 		public void ToGuid_WithSpecifiedKeyVector_IsStable()
 		{
 			// arrange
@@ -34,7 +103,28 @@
 		}
 
 		[TestMethod]
-		public void ToGuid_WithConfiguredKeyVector_IsStable()
+		public void ToGuid_WithoutInitializedKeyVector_ThrowsException()
+		{
+			// arrange
+			var captivum = default(InvalidOperationException);
+
+			// act
+			try
+			{
+				123.ToGuid();
+			}
+			catch (InvalidOperationException e)
+			{
+				captivum = e;
+			}
+
+			// assert
+			Assert.IsNotNull(captivum);
+			Assert.IsTrue(captivum.Message.Contains("not been initialized"));
+		}
+
+		[TestMethod]
+		public void ToGuid_WithInitializedKeyVector_IsStable()
 		{
 			// arrange
 			var input = 58008;
