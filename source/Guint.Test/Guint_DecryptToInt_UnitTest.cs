@@ -151,7 +151,7 @@
 		public void DecryptToInt_IsStable()
 		{
 			// arrange
-			var guid = new Guid("{8c6f393e-d06f-ef03-26ae-cd05bf6d7f85}");
+			var guid = new Guid("8c6f393e-d06f-ef03-26ae-cd05bf6d7f85");
 
 			// act
 			var result = guid.DecryptToInt("axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=", "iEoZxvDg38zjvdUF33lo1A==");
@@ -164,7 +164,7 @@
 		public void DecryptToInt_WithRandomGuid_ReturnsNull()
 		{
 			// arrange
-			var guid = new Guid("8c6f393e-d06f-ef03-26ae-cd05bf6d7f86");
+			var guid = Guid.NewGuid();
 
 			// act
 			var result = guid.DecryptToInt("axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=", "iEoZxvDg38zjvdUF33lo1A==");

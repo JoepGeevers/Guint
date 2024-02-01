@@ -115,7 +115,7 @@
 			=> Guint.ToInt(guid, key, vector)
 				.Match(
 					i => i,
-					notfound => throw new Exception()); // what kind of exception do we want to throw here?
+					notfound => throw new InvalidOperationException("Could not convert Guid to an Int32 with the specified key and vector"));
 
 		private static OneOf<byte[], NotFound> Crypt(byte[] data, ICryptoTransform transform)
 		{
@@ -183,7 +183,9 @@
 				? throw new InvalidOperationException("Cannot `ToInt` because key and vector have not been initialized")
 				: input.ToIntOrDefault(key, vector);
 
-		// todo 5: create ToIntOrExplode the nicely uses other methods for key vector checks 
-		public static Int32 ToIntOrExplode(this Guid input) => input.ToIntOrExplode(key, vector);
+		public static Int32 ToIntOrExplode(this Guid input)
+			=> key == null || vector == null
+				? throw new InvalidOperationException("Cannot `ToInt` because key and vector have not been initialized")
+				: input.ToIntOrExplode(key, vector);
 	}
 }

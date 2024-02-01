@@ -7,9 +7,8 @@
 
 	[TestClass]
 	[ExcludeFromCodeCoverage]
-	public class Guint_ToInt_UnitTest
+	public class Guint_ToIntOrExplode_UnitTest
     {
-		// put all endpoints under the same tests, that use key vector either passed or initialized
 		[TestInitialize]
 		public void TestInitialize()
 		{
@@ -18,7 +17,7 @@
 		}
 
 		[TestMethod]
-		public void ToInt_WithSpecifiedKeyVector_WhenKeyIsNull_ThrowsException()
+		public void ToIntOrExplode_WithSpecifiedKeyVector_WhenKeyIsNull_ThrowsException()
 		{
 			// arrange
 			ArgumentNullException? captivum = null;
@@ -27,7 +26,7 @@
 			// act
 			try
 			{
-				_ = new Guid().ToInt(key, vector);
+				_ = new Guid().ToIntOrExplode(key, vector);
 			}
 			catch (ArgumentNullException e)
 			{
@@ -41,7 +40,7 @@
 		}
 
 		[TestMethod]
-		public void ToInt_WithSpecifiedKeyVector_WhenKeyIsNotBase64_ThrowsException()
+		public void ToIntOrExplode_WithSpecifiedKeyVector_WhenKeyIsNotBase64_ThrowsException()
 		{
 			// arrange
 			ArgumentException? captivum = null;
@@ -50,7 +49,7 @@
 			// act
 			try
 			{
-				_ = new Guid().ToInt(key, vector);
+				_ = new Guid().ToIntOrExplode(key, vector);
 			}
 			catch (ArgumentException e)
 			{
@@ -64,7 +63,7 @@
 		}
 
 		[TestMethod]
-		public void ToInt_WithSpecifiedKeyVector_WhenKeyIsNotCorrectSize_ThrowsException()
+		public void ToIntOrExplode_WithSpecifiedKeyVector_WhenKeyIsNotCorrectSize_ThrowsException()
 		{
 			// arrange
 			ArgumentException? captivum = null;
@@ -73,7 +72,7 @@
 			// act
 			try
 			{
-				_ = new Guid().ToInt(key, vector);
+				_ = new Guid().ToIntOrExplode(key, vector);
 			}
 			catch (ArgumentException e)
 			{
@@ -87,7 +86,7 @@
 		}
 
 		[TestMethod]
-		public void ToInt_WithSpecifiedKeyVector_WhenVectorIsNull_ThrowsException()
+		public void ToIntOrExplode_WithSpecifiedKeyVector_WhenVectorIsNull_ThrowsException()
 		{
 			// arrange
 			ArgumentNullException? captivum = null;
@@ -96,7 +95,7 @@
 			// act
 			try
 			{
-				_ = new Guid().ToInt(key, vector);
+				_ = new Guid().ToIntOrExplode(key, vector);
 			}
 			catch (ArgumentNullException e)
 			{
@@ -110,7 +109,7 @@
 		}
 
 		[TestMethod]
-		public void ToInt_WithSpecifiedKeyVector_WhenVectorIsNotBase64_ThrowsException()
+		public void ToIntOrExplode_WithSpecifiedKeyVector_WhenVectorIsNotBase64_ThrowsException()
 		{
 			// arrange
 			ArgumentException? captivum = null;
@@ -119,7 +118,7 @@
 			// act
 			try
 			{
-				_ = new Guid().ToInt(key, vector);
+				_ = new Guid().ToIntOrExplode(key, vector);
 			}
 			catch (ArgumentException e)
 			{
@@ -133,7 +132,7 @@
 		}
 
 		[TestMethod]
-		public void ToInt_WithSpecifiedKeyVector_WhenVectorIsNotCorrectSize_ThrowsException()
+		public void ToIntOrExplode_WithSpecifiedKeyVector_WhenVectorIsNotCorrectSize_ThrowsException()
 		{
 			// arrange
 			ArgumentException? captivum = null;
@@ -142,7 +141,7 @@
 			// act
 			try
 			{
-				_ = new Guid().ToInt(key, vector);
+				_ = new Guid().ToIntOrExplode(key, vector);
 			}
 			catch (ArgumentException e)
 			{
@@ -156,22 +155,20 @@
 		}
 
 		[TestMethod]
-		public void ToInt_WithSpecifiedKeyVector_IsStable()
+		public void ToIntOrExplode_WithSpecifiedKeyVector_IsStable()
 		{
 			// arrange
 			var guid = new Guid("8c6f393e-d06f-ef03-26ae-cd05bf6d7f85");
 
 			// act
-			var result = guid.ToInt("axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=", "iEoZxvDg38zjvdUF33lo1A==");
+			var result = guid.ToIntOrExplode("axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=", "iEoZxvDg38zjvdUF33lo1A==");
 
 			// assert
-			result.Switch(
-				i => Assert.AreEqual(5318008, i),
-				notfound => Assert.Fail());
+			Assert.AreEqual(5318008, result);
 		}
 
 		[TestMethod]
-		public void ToInt_WithoutInitializedKeyVector_ThrowsException()
+		public void ToIntOrExplode_WithoutInitializedKeyVector_ThrowsException()
 		{
 			// arrange
 			var captivum = default(InvalidOperationException);
@@ -180,7 +177,7 @@
 			// act
 			try
 			{
-				_ = guid.ToInt();
+				_ = guid.ToIntOrExplode();
 			}
 			catch (InvalidOperationException e)
 			{
@@ -193,52 +190,63 @@
 		}
 
 		[TestMethod]
-		public void ToInt_WithConfiguredKeyVector_IsStable()
+		public void ToIntOrExplode_WithConfiguredKeyVector_IsStable()
 		{
 			// arrange
 			var guid = new Guid("8c6f393e-d06f-ef03-26ae-cd05bf6d7f85");
 			Guint.Set("axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=", "iEoZxvDg38zjvdUF33lo1A==");
 
 			// act
-			var result = guid.ToInt();
+			var result = guid.ToIntOrExplode();
 
 			// assert
-			result.Switch(
-				i => Assert.AreEqual(5318008, i),
-				notfound => Assert.Fail());
+			Assert.AreEqual(5318008, result);
 		}
 
 		[TestMethod]
-		public void ToInt_RandomGuid_WithSpecifiedKeyVector_ReturnsNotFound()
+		public void ToIntOrExplode_RandomGuid_WithSpecifiedKeyVector_ThrowsException()
 		{
 			// arrange
 			var guid = Guid.NewGuid();
+			InvalidOperationException? captivum = null;
 
 			// act
-			var result = guid.ToInt("axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=", "iEoZxvDg38zjvdUF33lo1A==");
+			try
+			{
+				_ = guid.ToIntOrExplode("axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=", "iEoZxvDg38zjvdUF33lo1A==");
+			}
+			catch (InvalidOperationException e)
+			{
+				captivum = e;
+			}
 
 			// assert
-			result.Switch(
-				i => Assert.Fail(),
-				notfound => { });
+			Assert.IsNotNull(captivum);
+			Assert.IsTrue(captivum.Message.Contains("Could not convert"));
 		}
 
 		[TestMethod]
-		public void ToInt_RandomGuid_WithConfiguredKeyVector_ReturnsNotFound()
+		public void ToIntOrExplode_RandomGuid_WithConfiguredKeyVector_ThrowsException()
 		{
 			// arrange
 			var guid = Guid.NewGuid();
+			InvalidOperationException? captivum = null;
+
 			Guint.Set("axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=", "iEoZxvDg38zjvdUF33lo1A==");
 
 			// act
-			var result = guid.ToInt();
+			try
+			{
+				_ = guid.ToIntOrExplode();
+			}
+			catch(InvalidOperationException e)
+			{
+				captivum = e;
+			}
 
 			// assert
-			result.Switch(
-				i => Assert.Fail(),
-				notfound => { });
+			Assert.IsNotNull(captivum);
+			Assert.IsTrue(captivum.Message.Contains("Could not convert"));
 		}
-
-		// todo: also test OrDefault and OrExplode
 	}
 }

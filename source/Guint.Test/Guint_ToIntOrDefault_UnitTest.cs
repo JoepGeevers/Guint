@@ -158,7 +158,7 @@
 		public void ToIntOrDefault_WithSpecifiedKeyVector_IsStable()
 		{
 			// arrange
-			var guid = new Guid("{8c6f393e-d06f-ef03-26ae-cd05bf6d7f85}");
+			var guid = new Guid("8c6f393e-d06f-ef03-26ae-cd05bf6d7f85");
 
 			// act
 			var result = guid.ToIntOrDefault("axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=", "iEoZxvDg38zjvdUF33lo1A==");
@@ -172,11 +172,12 @@
 		{
 			// arrange
 			var captivum = default(InvalidOperationException);
+			var guid = Guid.NewGuid();
 
 			// act
 			try
 			{
-				_ = Guid.NewGuid().ToIntOrDefault();
+				_ = guid.ToIntOrDefault();
 			}
 			catch (InvalidOperationException e)
 			{
@@ -192,7 +193,7 @@
 		public void ToIntOrDefault_WithConfiguredKeyVector_IsStable()
 		{
 			// arrange
-			var guid = new Guid("{8c6f393e-d06f-ef03-26ae-cd05bf6d7f85}");
+			var guid = new Guid("8c6f393e-d06f-ef03-26ae-cd05bf6d7f85");
 			Guint.Set("axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=", "iEoZxvDg38zjvdUF33lo1A==");
 
 			// act
@@ -206,7 +207,7 @@
 		public void ToIntOrDefault_RandomGuid_WithSpecifiedKeyVector_ReturnsZero()
 		{
 			// arrange
-			var guid = new Guid("8c6f393e-d06f-ef03-26ae-cd05bf6d7f86");
+			var guid = Guid.NewGuid();
 
 			// act
 			var result = guid.ToIntOrDefault("axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=", "iEoZxvDg38zjvdUF33lo1A==");
@@ -216,10 +217,10 @@
 		}
 
 		[TestMethod]
-		public void ToIntOrDefault_RandomGuid_WithConfiguredKeyVector_ReturnsNotFound()
+		public void ToIntOrDefault_RandomGuid_WithConfiguredKeyVector_ReturnsZero()
 		{
 			// arrange
-			var guid = new Guid("8c6f393e-d06f-ef03-26ae-cd05bf6d7f86");
+			var guid = Guid.NewGuid();
 			Guint.Set("axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=", "iEoZxvDg38zjvdUF33lo1A==");
 
 			// act
