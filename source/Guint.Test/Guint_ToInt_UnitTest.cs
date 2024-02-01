@@ -238,7 +238,5 @@
 				i => Assert.Fail(),
 				notfound => { });
 		}
-
-		// todo: also test OrDefault and OrExplode
 	}
 }
