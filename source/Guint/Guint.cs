@@ -26,6 +26,7 @@
 				return (key, vector);
 			}
 		}
+
 		public static void Set(string key, string vector)
 		{
 			Guint.ValidateInitialization(key, vector);
@@ -33,25 +34,28 @@
 			Guint.key = key;
 			Guint.vector = vector;
 		}
+
 		public static Guid ToGuid(this Int32 input)
 			=> key == null || vector == null
 				? throw new InvalidOperationException("Cannot `ToGuid` because key and vector have not been initialized")
 				: input.ToGuid(key, vector);
+
 		public static OneOf<Int32, NotFound> ToInt(this Guid input)
 			=> key == null || vector == null
 				? throw new InvalidOperationException("Cannot `ToInt` because key and vector have not been initialized")
 				: input.ToInt(key, vector);
+
 		public static Int32 ToIntOrDefault(this Guid input)
 			=> key == null || vector == null
-				? throw new InvalidOperationException("Cannot `ToInt` because key and vector have not been initialized")
+				? throw new InvalidOperationException("Cannot `ToIntOrDefault` because key and vector have not been initialized")
 				: input.ToIntOrDefault(key, vector);
+
 		public static Int32 ToIntOrExplode(this Guid input)
 			=> key == null || vector == null
-				? throw new InvalidOperationException("Cannot `ToInt` because key and vector have not been initialized")
+				? throw new InvalidOperationException("Cannot `ToIntOrExplode` because key and vector have not been initialized")
 				: input.ToIntOrExplode(key, vector);
 
-		// todo: do we actually need to expose these methods? should't Guintv2 always work with pre-initialization?
-		public static Guid ToGuid(this Int32 input, string key, string vector)
+		private static Guid ToGuid(this Int32 input, string key, string vector)
 		{
 			var rgbKey = Guint.GetRgbKey(key);
 			var rgbVector = Guint.GetRgbVector(vector);
@@ -72,7 +76,8 @@
 						notfound => throw new InvalidOperationException("This error should really, really never happen, because any 32-bit int fits into a 128-bit Guid. Call me!"));
 			}
 		}
-		public static OneOf<Int32, NotFound> ToInt(this Guid guid, string key, string vector)
+
+		private static OneOf<Int32, NotFound> ToInt(this Guid guid, string key, string vector)
 		{
 			var rgbKey = Guint.GetRgbKey(key);
 			var rgbVector = Guint.GetRgbVector(vector);
@@ -86,12 +91,14 @@
 						notfound => notfound);
 			}
 		}
-		public static Int32 ToIntOrDefault(this Guid guid, string key, string vector)
+
+		private static Int32 ToIntOrDefault(this Guid guid, string key, string vector)
 			=> Guint.ToInt(guid, key, vector)
 				.Match(
 					i => i,
 					notfound => default(Int32));
-		public static Int32 ToIntOrExplode(this Guid guid, string key, string vector)
+
+		private static Int32 ToIntOrExplode(this Guid guid, string key, string vector)
 			=> Guint.ToInt(guid, key, vector)
 				.Match(
 					i => i,
@@ -99,6 +106,7 @@
 
 		[Obsolete("Use `ToGuid` instead")]
 		public static Guid EncryptIntoGuid(this Int32 input, string key, string vector) => input.ToGuid(key, vector);
+
 		[Obsolete("Use `ToInt`, `ToIntOrDefault` or `ToIntOrExplode` instead")]
 		public static Int32? DecryptToInt(this Guid input, string key, string vector)
 			=> input.ToInt(key, vector)
@@ -107,6 +115,7 @@
 					notfound => default(Int32?));
 
 		internal static Aes GetAlgorithm() => Aes.Create();
+
 		private static void ValidateInitialization(string key, string vector)
 		{
 			if (Guint.key == null || Guint.vector == null)
@@ -123,9 +132,13 @@
 
 			throw new InvalidOperationException("Key and vector cannot be changed");
 		}
+
 		private static void Validate(string key, string vector) => Guint.ToGuid(123456789, key, vector);
+
 		private static byte[] GetRgbKey(string key) => GetRgb(key, "key", 32);
+
 		private static byte[] GetRgbVector(string vector) => GetRgb(vector, "vector", 16);
+
 		private static byte[] GetRgb(string input, string name, int length)
 		{
 			if (input == null)
@@ -148,6 +161,7 @@
 
 			throw new ArgumentException($"Value must be a base 64 encoded byte[{length}]", name);
 		}
+
 		private static OneOf<byte[], NotFound> Crypt(byte[] data, ICryptoTransform transform)
 		{
 			using (var memory = new MemoryStream())

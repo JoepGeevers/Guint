@@ -18,6 +18,8 @@ public class SysTrayApp : Form
 
     public SysTrayApp()
     {
+        Guint.Guint.Set(this.Pair.key, this.Pair.vector);
+
         trayMenu = new ContextMenuStrip();
         trayMenu.Items.Add("Exit", null, OnExit);
 
@@ -82,13 +84,13 @@ public class SysTrayApp : Form
 
             if (int.TryParse(current, out int i))
             {
-                var encrypted = i.ToGuid(this.Pair.key, this.Pair.vector);
+                var encrypted = i.ToGuid();
                 this.found = encrypted.ToString();
                 ShowBalloon($"An integer `{i}` was found on the clipboard. Click here to copy the corresponding Guid `{encrypted}` onto the clipboard");
             }
             else if (Guid.TryParse(current, out var g))
             {
-                var decrypted = g.ToInt(this.Pair.key, this.Pair.vector);
+                var decrypted = g.ToInt();
 
                 decrypted.Switch(
                     i => ShowBalloon($"A guid `{g}` was found on the clipboard. Click here to copy the corresponding int `{decrypted}` onto the clipboard"),
