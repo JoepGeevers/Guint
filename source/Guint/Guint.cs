@@ -90,7 +90,7 @@
 					i => i,
 					notfound => default(Int32?));
 
-		public static OneOf<Int32, NotFound> ToInt(this Guid guid, string key, string vector)
+		public static OneOf<Int32, NotFound> ToInt(this Guid guid, string key, string vector) // todo: do we actually need to expose this method? should't Guintv2 always work with pre-initialization?
 		{
 			var rgbKey = Guint.GetRgbKey(key);
 			var rgbVector = Guint.GetRgbVector(vector);
@@ -178,8 +178,10 @@
 				? throw new InvalidOperationException("Cannot `ToInt` because key and vector have not been initialized")
 				: input.ToInt(key, vector);
 
-		// todo 4: create ToIntOrDefault the nicely uses other methods for key vector checks 
-		public static Int32 ToIntOrDefault(this Guid input) => input.ToIntOrDefault(key, vector);
+		public static Int32 ToIntOrDefault(this Guid input)
+			=> key == null || vector == null
+				? throw new InvalidOperationException("Cannot `ToInt` because key and vector have not been initialized")
+				: input.ToIntOrDefault(key, vector);
 
 		// todo 5: create ToIntOrExplode the nicely uses other methods for key vector checks 
 		public static Int32 ToIntOrExplode(this Guid input) => input.ToIntOrExplode(key, vector);
