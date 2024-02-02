@@ -32,11 +32,11 @@ public async Task<IHttpActionResult> Get(Guid id)
 
 ## Setup
 
-1. Generate a key and vector. Go to https://dotnetfiddle.net/z8FFmN or run `(var key, var vector) = Guint.Guint.GenerateKeyAndInitializationVector();`
+1. Generate a key and vector. Go to https://dotnetfiddle.net/z8FFmN or run `(var key, var vector) = Guint.GenerateKeyAndInitializationVector();`
 
 2. Initialize Guint at the start of your application with `Guint.Set(key, vector)`
 
-3. To transform, use `Guint.ToGuid`, `Guint.ToInt`, `Guint.ToIntOrDefault` or `Guint.ToGuidOrExplode`
+3. To transform, use extension methods `.ToGuid`, `.ToInt`, `.ToIntOrDefault` or `.ToGuidOrExplode`
 
 
 ---
