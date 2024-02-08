@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.IO;
+	using System.Linq;
 	using System.Security.Cryptography;
 
 	using OneOf;
@@ -9,8 +10,8 @@
 
 	public static class Guint
 	{
-		internal static string key;
-		internal static string vector;
+		internal static byte[] key;
+		internal static byte[] vector;
 		private const string invalidPaddingMessage = "Padding is invalid and cannot be removed.";
 
 		public static (string Key, string InitializationVector) GenerateKeyAndInitializationVector()
@@ -29,10 +30,13 @@
 
 		public static void Set(string key, string vector)
 		{
-			Guint.ValidateInitialization(key, vector);
+			var rgbKey = Guint.GetRgbKey(key);
+			var rgbVector = Guint.GetRgbVector(vector);
 
-			Guint.key = key;
-			Guint.vector = vector;
+			Guint.ValidateInitialization(rgbKey, rgbVector);
+
+			Guint.key = rgbKey;
+			Guint.vector = rgbVector;
 		}
 
 		public static Guid ToGuid(this Int32 input)
@@ -55,13 +59,10 @@
 				? throw new InvalidOperationException("Cannot `ToIntOrExplode` because key and vector have not been initialized")
 				: input.ToIntOrExplode(Guint.key, Guint.vector);
 
-		private static Guid ToGuid(this Int32 input, string key, string vector)
+		private static Guid ToGuid(this Int32 input, byte[] key, byte[] vector)
 		{
-			var rgbKey = Guint.GetRgbKey(key);
-			var rgbVector = Guint.GetRgbVector(vector);
-
 			using (var algorithm = Guint.GetAlgorithm())
-			using (var encryptor = algorithm.CreateEncryptor(rgbKey, rgbVector))
+			using (var encryptor = algorithm.CreateEncryptor(key, vector))
 			{
 				var bytes = BitConverter.GetBytes(input);
 
@@ -77,13 +78,10 @@
 			}
 		}
 
-		private static OneOf<Int32, NotFound> ToInt(this Guid guid, string key, string vector)
+		private static OneOf<Int32, NotFound> ToInt(this Guid guid, byte[] key, byte[] vector)
 		{
-			var rgbKey = Guint.GetRgbKey(key);
-			var rgbVector = Guint.GetRgbVector(vector);
-
 			using (var algorithm = Guint.GetAlgorithm())
-			using (var decryptor = algorithm.CreateDecryptor(rgbKey, rgbVector))
+			using (var decryptor = algorithm.CreateDecryptor(key, vector))
 			{
 				return Guint.Crypt(guid.ToByteArray(), decryptor)
 					.Match<OneOf<Int32, NotFound>>(
@@ -92,13 +90,13 @@
 			}
 		}
 
-		private static Int32 ToIntOrDefault(this Guid guid, string key, string vector)
+		private static Int32 ToIntOrDefault(this Guid guid, byte[] key, byte[] vector)
 			=> Guint.ToInt(guid, key, vector)
 				.Match(
 					i => i,
 					notfound => default(Int32));
 
-		private static Int32 ToIntOrExplode(this Guid guid, string key, string vector)
+		private static Int32 ToIntOrExplode(this Guid guid, byte[] key, byte[] vector)
 			=> Guint.ToInt(guid, key, vector)
 				.Match(
 					i => i,
@@ -106,16 +104,16 @@
 
 		internal static Aes GetAlgorithm() => Aes.Create();
 
-		private static void ValidateInitialization(string key, string vector)
+		private static void ValidateInitialization(byte[] key, byte[] vector)
 		{
 			if (Guint.key == null || Guint.vector == null)
-			{
+			 {
 				Guint.Validate(key, vector);
 
 				return;
 			}
 
-			if (Guint.key == key && Guint.vector == vector)
+			if (key.SequenceEqual(Guint.key) && vector.SequenceEqual(Guint.vector))
 			{
 				return;
 			}
@@ -123,7 +121,7 @@
 			throw new InvalidOperationException("Key and vector cannot be changed");
 		}
 
-		private static void Validate(string key, string vector) => Guint.ToGuid(123456789, key, vector);
+		private static void Validate(byte[] key, byte[] vector) => Guint.ToGuid(123456789, key, vector);
 
 		private static byte[] GetRgbKey(string key) => GetRgb(key, "key", 32);
 

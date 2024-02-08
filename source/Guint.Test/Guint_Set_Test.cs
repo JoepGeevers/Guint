@@ -158,9 +158,8 @@
 			// arrange
             (var key, var vector) = Guint.GenerateKeyAndInitializationVector();
 
-			Guint.Set(key, vector);
-
 			// act
+			Guint.Set(key, vector);
 			Guint.Set(key, vector);
 
             // assert
@@ -175,9 +174,9 @@
 			(var key1, var vector1) = Guint.GenerateKeyAndInitializationVector();
 			(var key2, var vector2) = Guint.GenerateKeyAndInitializationVector();
 
+			// act
 			Guint.Set(key1, vector1);
 
-			// act
 			try
 			{
 				Guint.Set(key2, vector2);
