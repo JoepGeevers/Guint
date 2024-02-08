@@ -14,6 +14,7 @@
 		internal static byte[] vector;
 
 		private const string invalidPaddingMessage = "Padding is invalid and cannot be removed.";
+		private static string secretNotInitializedMessage = $"Guint cannot convert your input because no secret has been initialized. Use `{nameof(Guint.Use)}` to initialize your personal secret. If you don't have one yet, use `{nameof(Guint.GenerateSecret)}` to generate one.";
 
 		public static string GenerateSecret()
 		{
@@ -22,25 +23,12 @@
 				algorithm.GenerateKey();
 				algorithm.GenerateIV();
 
-				return Guint.ConvertToSecret(algorithm.Key, algorithm.IV);
+				var pair = algorithm.Key
+					.Concat(algorithm.IV)
+					.ToArray();
+
+				return Convert.ToBase64String(pair);
 			}
-		}
-
-		public static string ConvertToSecret(string key, string vector)
-		{
-			var rgbKey = Guint.GetRgbKey(key);
-			var rgbVector = Guint.GetRgbVector(vector);
-
-			return Guint.ConvertToSecret(rgbKey, rgbVector);
-		}
-
-		private static string ConvertToSecret(byte[] key, byte[] vector)
-		{
-			var pair = key
-				.Concat(vector)
-				.ToArray();
-
-			return Convert.ToBase64String(pair);
 		}
 
 		public static void Use(string secret)
@@ -48,11 +36,6 @@
 			using (var algorithm = Guint.GetAlgorithm())
 			{
 				var bytes = Convert.FromBase64String(secret);
-
-				if (bytes.Length != (algorithm.KeySize / 8) + (algorithm.BlockSize / 8)) // The size of the IV property must be the same as the BlockSize property divided by 8
-				{
-					throw new ArgumentException($"Secret is not valid. Please use {nameof(Guint.GenerateSecret)} to generate a valid secret", secret);
-				}
 
 				var key = bytes
 					.Take(algorithm.KeySize / 8)
@@ -62,7 +45,23 @@
 					.Skip(algorithm.KeySize / 8)
 					.ToArray();
 
-				Guint.ValidateInitialization(key, vector);
+				if (key.Length != algorithm.KeySize / 8)
+				{
+					throw new ArgumentException($"Secret is not valid. Please use {nameof(Guint.GenerateSecret)} to generate a valid secret", secret);
+				}
+
+				if (vector.Length != algorithm.BlockSize / 8) // The size of the IV property must be the same as the BlockSize property divided by 8
+				{
+					throw new ArgumentException($"Secret is not valid. Please use {nameof(Guint.GenerateSecret)} to generate a valid secret", secret);
+				}
+
+				if (Guint.key != null || Guint.vector != null)
+				{
+					if (false == key.SequenceEqual(Guint.key) && false == vector.SequenceEqual(Guint.vector))
+					{
+						throw new InvalidOperationException("Key and vector cannot be changed");
+					}
+				}
 
 				Guint.key = key;
 				Guint.vector = vector;
@@ -70,29 +69,12 @@
 		}
 
 		public static Guid ToGuid(this Int32 input)
-			=> Guint.key == null || Guint.vector == null
-				? throw new InvalidOperationException(Guint.GenerateNotInitializedMessageFor(nameof(Guint.ToGuid)))
-				: input.ToGuid(Guint.key, Guint.vector);
-
-		private static string GenerateNotInitializedMessageFor(string method) => $"Cannot `{method}` because no secret has been initialized. Use `{nameof(Guint.Use)}` to initialize your personal secret. If you don't have one yet, use `{nameof(Guint.GenerateSecret)}` to generate one.";
-
-		public static OneOf<Int32, NotFound> ToInt(this Guid input)
-			=> Guint.key == null || Guint.vector == null
-				? throw new InvalidOperationException(Guint.GenerateNotInitializedMessageFor(nameof(Guint.ToInt)))
-				: input.ToInt(Guint.key, Guint.vector);
-
-		public static Int32 ToIntOrDefault(this Guid input)
-			=> Guint.key == null || Guint.vector == null
-				? throw new InvalidOperationException(Guint.GenerateNotInitializedMessageFor(nameof(Guint.ToIntOrDefault)))
-				: input.ToIntOrDefault(Guint.key, Guint.vector);
-
-		public static Int32 ToIntOrExplode(this Guid input)
-			=> Guint.key == null || Guint.vector == null
-				? throw new InvalidOperationException(Guint.GenerateNotInitializedMessageFor(nameof(Guint.ToIntOrExplode)))
-				: input.ToIntOrExplode(Guint.key, Guint.vector);
-
-		private static Guid ToGuid(this Int32 input, byte[] key, byte[] vector)
 		{
+			if (Guint.key == null || Guint.vector == null)
+			{
+				throw new InvalidOperationException(Guint.secretNotInitializedMessage);
+			}
+
 			using (var algorithm = Guint.GetAlgorithm())
 			using (var encryptor = algorithm.CreateEncryptor(key, vector))
 			{
@@ -110,8 +92,23 @@
 			}
 		}
 
-		private static OneOf<Int32, NotFound> ToInt(this Guid guid, byte[] key, byte[] vector)
+		public static Int32 ToIntOrDefault(this Guid input) => input.ToInt()
+			.Match(
+				i => i,
+				notfound => default(Int32));
+
+		public static Int32 ToIntOrExplode(this Guid input) => input.ToInt()
+			.Match(
+				i => i,
+				notfound => throw new InvalidOperationException("Guint could not convert your input to an Int32 with the specified secret"));
+
+		public static OneOf<Int32, NotFound> ToInt(this Guid guid)
 		{
+			if (Guint.key == null || Guint.vector == null)
+			{
+				throw new InvalidOperationException(Guint.secretNotInitializedMessage);
+			}
+
 			using (var algorithm = Guint.GetAlgorithm())
 			using (var decryptor = algorithm.CreateDecryptor(key, vector))
 			{
@@ -121,18 +118,6 @@
 						notfound => notfound);
 			}
 		}
-
-		private static Int32 ToIntOrDefault(this Guid guid, byte[] key, byte[] vector)
-			=> Guint.ToInt(guid, key, vector)
-				.Match(
-					i => i,
-					notfound => default(Int32));
-
-		private static Int32 ToIntOrExplode(this Guid guid, byte[] key, byte[] vector)
-			=> Guint.ToInt(guid, key, vector)
-				.Match(
-					i => i,
-					notfound => throw new InvalidOperationException("Could not convert Guid to an Int32 with the specified key and vector"));
 
 		internal static Aes GetAlgorithm()
 		{
@@ -146,25 +131,6 @@
 			
 			return algorithm;
 		}
-
-		private static void ValidateInitialization(byte[] key, byte[] vector)
-		{
-			if (Guint.key == null || Guint.vector == null)
-			{
-				Guint.Validate(key, vector);
-
-				return;
-			}
-
-			if (key.SequenceEqual(Guint.key) && vector.SequenceEqual(Guint.vector))
-			{
-				return;
-			}
-
-			throw new InvalidOperationException("Key and vector cannot be changed");
-		}
-
-		private static void Validate(byte[] key, byte[] vector) => Guint.ToGuid(123456789, key, vector);
 
 		private static byte[] GetRgbKey(string key) => GetRgb(key, "key", 32);
 

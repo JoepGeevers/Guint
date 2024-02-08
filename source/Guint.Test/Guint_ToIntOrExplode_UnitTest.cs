@@ -33,7 +33,7 @@
 
 			// assert
 			Assert.IsNotNull(captivum);
-			Assert.IsTrue(captivum.Message.Contains("Cannot `ToIntOrExplode` because no secret has been initialized"));
+			Assert.IsTrue(captivum.Message.Contains("no secret has been initialized"));
 		}
 
 		[TestMethod]
@@ -74,7 +74,7 @@
 
 			// assert
 			Assert.IsNotNull(captivum);
-			Assert.IsTrue(captivum.Message.Contains("Could not convert"));
+			Assert.IsTrue(captivum.Message.Contains("could not convert"));
 		}
 	}
 }

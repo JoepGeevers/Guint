@@ -32,7 +32,7 @@
 
 			// assert
 			Assert.IsNotNull(captivum);
-			Assert.IsTrue(captivum.Message.Contains("Cannot `ToGuid` because no secret has been initialized"));
+			Assert.IsTrue(captivum.Message.Contains("no secret has been initialized"));
 		}
 
 		[TestMethod]
