@@ -12,6 +12,7 @@
 	{
 		internal static byte[] key;
 		internal static byte[] vector;
+
 		private const string invalidPaddingMessage = "Padding is invalid and cannot be removed.";
 
 		public static string GenerateSecret()
@@ -21,16 +22,16 @@
 				algorithm.GenerateKey();
 				algorithm.GenerateIV();
 
-				return ConvertToSecret(algorithm.Key, algorithm.IV);
+				return Guint.ConvertToSecret(algorithm.Key, algorithm.IV);
 			}
 		}
 
 		public static string ConvertToSecret(string key, string vector)
 		{
-			var rgbKey = GetRgbKey(key);
-			var rgbVector = GetRgbVector(vector);
+			var rgbKey = Guint.GetRgbKey(key);
+			var rgbVector = Guint.GetRgbVector(vector);
 
-			return ConvertToSecret(rgbKey, rgbVector);
+			return Guint.ConvertToSecret(rgbKey, rgbVector);
 		}
 
 		private static string ConvertToSecret(byte[] key, byte[] vector)
