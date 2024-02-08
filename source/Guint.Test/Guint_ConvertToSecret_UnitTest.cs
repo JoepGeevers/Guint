@@ -1,30 +1,29 @@
 ﻿namespace Guint.Test
 {
-    using System;
+	using System;
 
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    [TestClass]
-	public class Guint_Set_Test
-    {
-        [TestInitialize]
-        public void TestInitialize()
-        {
-            Guint.key = null;
-            Guint.vector = null;
-        }
+	[TestClass]
+	public class Guint_ConvertToSecret_UnitTest
+	{
+		[TestInitialize]
+		public void TestInitialize()
+		{
+			Guint.key = null;
+			Guint.vector = null;
+		}
 
 		[TestMethod]
-		public void Set_WhenKeyIsNull_ThrowsException()
+		public void ConvertToSecret_WhenKeyIsNull_ThrowsException()
 		{
 			// arrange
 			ArgumentNullException? captivum = null;
-			(var key, var vector) = (default(string), "NSqvP1Acyge252v+8w2HyA==");
 
 			// act
 			try
 			{
-				Guint.Set(key, vector);
+				var secret = Guint.ConvertToSecret(default(string), "NSqvP1Acyge252v+8w2HyA==");
 			}
 			catch (ArgumentNullException e)
 			{
@@ -38,16 +37,15 @@
 		}
 
 		[TestMethod]
-		public void Set_WhenKeyIsNotBase64_ThrowsException()
+		public void ConvertToSecret_WhenKeyIsNotBase64_ThrowsException()
 		{
 			// arrange
 			ArgumentException? captivum = null;
-			(var key, var vector) = ("I'm not base64", "NSqvP1Acyge252v+8w2HyA==");
 
 			// act
 			try
 			{
-				Guint.Set(key, vector);
+				var secret = Guint.ConvertToSecret("I'm not base64", "NSqvP1Acyge252v+8w2HyA==");
 			}
 			catch (ArgumentException e)
 			{
@@ -61,16 +59,15 @@
 		}
 
 		[TestMethod]
-		public void Set_WhenKeyIsNotCorrectSize_ThrowsException()
+		public void ConvertToSecret_WhenKeyIsNotCorrectSize_ThrowsException()
 		{
 			// arrange
 			ArgumentException? captivum = null;
-			(var key, var vector) = ("NSqvP1Acyge252v+8w2HyA==", "NSqvP1Acyge252v+8w2HyA==");
 
 			// act
 			try
 			{
-				Guint.Set(key, vector);
+				Guint.ConvertToSecret("NSqvP1Acyge252v+8w2HyA==", "NSqvP1Acyge252v+8w2HyA==");
 			}
 			catch (ArgumentException e)
 			{
@@ -84,16 +81,15 @@
 		}
 
 		[TestMethod]
-		public void Set_WhenVectorIsNull_ThrowsException()
+		public void ConvertToSecret_WhenVectorIsNull_ThrowsException()
 		{
 			// arrange
 			ArgumentNullException? captivum = null;
-			(var key, var vector) = ("wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=", default(string));
 
 			// act
 			try
 			{
-				Guint.Set(key, vector);
+				Guint.ConvertToSecret("wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=", default(string));
 			}
 			catch (ArgumentNullException e)
 			{
@@ -107,16 +103,15 @@
 		}
 
 		[TestMethod]
-		public void Set_WhenVectorIsNotBase64_ThrowsException()
+		public void ConvertToSecret_WhenVectorIsNotBase64_ThrowsException()
 		{
 			// arrange
 			ArgumentException? captivum = null;
-			(var key, var vector) = ("wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=", "I'm not base64");
 
 			// act
 			try
 			{
-				Guint.Set(key, vector);
+				Guint.ConvertToSecret("wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=", "I'm not base64");
 			}
 			catch (ArgumentException e)
 			{
@@ -130,16 +125,15 @@
 		}
 
 		[TestMethod]
-		public void Set_WhenVectorIsNotCorrectSize_ThrowsException()
+		public void ConvertToSecret_WhenVectorIsNotCorrectSize_ThrowsException()
 		{
 			// arrange
 			ArgumentException? captivum = null;
-			(var key, var vector) = ("wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=", "wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=");
 
 			// act
 			try
 			{
-				Guint.Set(key, vector);
+				Guint.ConvertToSecret("wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=", "wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=");
 			}
 			catch (ArgumentException e)
 			{
@@ -153,42 +147,38 @@
 		}
 
 		[TestMethod]
-        public void WhenSettingTheSameKeyVectorPairAgain_DoesNotThrowException()
-        {
+		public void ConvertToSecret_WhenKeyAndVectorAreValid_ReturnsValidSecret()
+		{
 			// arrange
-            (var key, var vector) = Guint.GenerateKeyAndInitializationVector();
+			var input = 12345;
+
+			var key = "axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=";
+			var vector = "iEoZxvDg38zjvdUF33lo1A==";
 
 			// act
-			Guint.Set(key, vector);
-			Guint.Set(key, vector);
+			var secret = Guint.ConvertToSecret(key, vector);
 
-            // assert
-            { }
+			Guint.Use(secret);
+
+			var output = input
+				.ToGuid()
+				.ToIntOrExplode();
+
+			// assert
+			Assert.AreEqual(input, output);
 		}
 
 		[TestMethod]
-		public void WhenSettingDifferentKeyVectorPair_ThrowsException()
+		public void ConvertToSecret_IsStable()
 		{
 			// arrange
-			var captivum = default(InvalidOperationException);
-			(var key1, var vector1) = Guint.GenerateKeyAndInitializationVector();
-			(var key2, var vector2) = Guint.GenerateKeyAndInitializationVector();
+			var expected = "wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ1Kq8/UBzKB7bna/7zDYfI";
 
 			// act
-			Guint.Set(key1, vector1);
-
-			try
-			{
-				Guint.Set(key2, vector2);
-			}
-			catch (InvalidOperationException e)
-			{
-				captivum = e;
-			}
+			var actual = Guint.ConvertToSecret("wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=", "NSqvP1Acyge252v+8w2HyA==");
 
 			// assert
-			Assert.IsNotNull(captivum);
-			Assert.IsTrue(captivum.Message.Contains("cannot be changed"));
+			Assert.AreEqual(expected, actual);
 		}
 	}
 }

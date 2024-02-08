@@ -19,9 +19,9 @@
 		{
 			// arrange
 			var input = Int32.MinValue;
-			(var key, var vector) = Guint.GenerateKeyAndInitializationVector();
+			var secret = Guint.GenerateSecret();
 
-			Guint.Set(key, vector);
+			Guint.Use(secret);
 
 			// act
 			var output = input
@@ -39,9 +39,9 @@
 		{
 			// arrange
 			var input = Int32.MaxValue;
-			(var key, var vector) = Guint.GenerateKeyAndInitializationVector();
+			var secret = Guint.GenerateSecret();
 
-			Guint.Set(key, vector);
+			Guint.Use(secret);
 
 			// act
 			var output = input
@@ -59,9 +59,9 @@
 		{
 			// arrange
 			var input = 765437653;
-			(var key, var vector) = Guint.GenerateKeyAndInitializationVector();
+			var secret = Guint.GenerateSecret();
 
-			Guint.Set(key, vector);
+			Guint.Use(secret);
 
 			// act
 			var output = input

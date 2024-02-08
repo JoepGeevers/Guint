@@ -15,7 +15,7 @@
 		}
 
 		[TestMethod]
-		public void ToGuid_WithoutInitializedKeyVector_ThrowsException()
+		public void ToGuid_WithoutInitializedSecret_ThrowsException()
 		{
 			// arrange
 			var captivum = default(InvalidOperationException);
@@ -32,7 +32,7 @@
 
 			// assert
 			Assert.IsNotNull(captivum);
-			Assert.IsTrue(captivum.Message.Contains("not been initialized"));
+			Assert.IsTrue(captivum.Message.Contains("Cannot `ToGuid` because no secret has been initialized"));
 		}
 
 		[TestMethod]
@@ -40,7 +40,9 @@
 		{
 			// arrange
 			var input = 58008;
-			Guint.Set("wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ=", "NSqvP1Acyge252v+8w2HyA==");
+			var secret = "wJcb9Q+26p0wdNtNEaA4mkEyT4R56WKPyeSJs25eHtQ1Kq8/UBzKB7bna/7zDYfI";
+
+			Guint.Use(secret);
 
 			// act
 			var guid = input.ToGuid();

@@ -7,7 +7,7 @@ public class SysTrayApp : Form
     private System.Windows.Forms.Timer clipboardCheckTimer;
     private string previous;
 
-    (string key, string vector) Pair = ("", "");
+    string secret = "PUT YOUR SECRET HERE";
     private string found;
 
     [STAThread]
@@ -18,7 +18,7 @@ public class SysTrayApp : Form
 
     public SysTrayApp()
     {
-        Guint.Guint.Set(this.Pair.key, this.Pair.vector);
+        Guint.Guint.Use(this.secret);
 
         trayMenu = new ContextMenuStrip();
         trayMenu.Items.Add("Exit", null, OnExit);

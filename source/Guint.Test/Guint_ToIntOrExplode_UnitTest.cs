@@ -15,7 +15,7 @@
 		}
 
 		[TestMethod]
-		public void ToIntOrExplode_WithoutInitializedKeyVector_ThrowsException()
+		public void ToIntOrExplode_WithoutInitializedSecret_ThrowsException()
 		{
 			// arrange
 			var captivum = default(InvalidOperationException);
@@ -33,7 +33,7 @@
 
 			// assert
 			Assert.IsNotNull(captivum);
-			Assert.IsTrue(captivum.Message.Contains("not been initialized"));
+			Assert.IsTrue(captivum.Message.Contains("Cannot `ToIntOrExplode` because no secret has been initialized"));
 		}
 
 		[TestMethod]
@@ -41,7 +41,9 @@
 		{
 			// arrange
 			var guid = new Guid("8c6f393e-d06f-ef03-26ae-cd05bf6d7f85");
-			Guint.Set("axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=", "iEoZxvDg38zjvdUF33lo1A==");
+			var secret = "axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvaIShnG8ODfzOO91QXfeWjU";
+
+			Guint.Use(secret);
 
 			// act
 			var result = guid.ToIntOrExplode();
@@ -55,9 +57,10 @@
 		{
 			// arrange
 			var guid = Guid.NewGuid();
+			var secret = Guint.GenerateSecret();
 			InvalidOperationException? captivum = null;
 
-			Guint.Set("axRxUAuCAVDkNzqriQ0j7K/YV02xddjO5wIE1AYKrvY=", "iEoZxvDg38zjvdUF33lo1A==");
+			Guint.Use(secret);
 
 			// act
 			try
