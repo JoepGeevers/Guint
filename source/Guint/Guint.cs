@@ -104,16 +104,6 @@
 					i => i,
 					notfound => throw new InvalidOperationException("Could not convert Guid to an Int32 with the specified key and vector"));
 
-		[Obsolete("Use `ToGuid` instead")]
-		public static Guid EncryptIntoGuid(this Int32 input, string key, string vector) => input.ToGuid(key, vector);
-
-		[Obsolete("Use `ToInt`, `ToIntOrDefault` or `ToIntOrExplode` instead")]
-		public static Int32? DecryptToInt(this Guid input, string key, string vector)
-			=> input.ToInt(key, vector)
-				.Match(
-					i => i,
-					notfound => default(Int32?));
-
 		internal static Aes GetAlgorithm() => Aes.Create();
 
 		private static void ValidateInitialization(string key, string vector)
