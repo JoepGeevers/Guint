@@ -132,32 +132,6 @@
 			return algorithm;
 		}
 
-		private static byte[] GetRgbKey(string key) => GetRgb(key, "key", 32);
-
-		private static byte[] GetRgbVector(string vector) => GetRgb(vector, "vector", 16);
-
-		private static byte[] GetRgb(string input, string name, int length)
-		{
-			if (input == null)
-			{
-				throw new ArgumentNullException(name);
-			}
-
-			try
-			{
-				var bytes = Convert.FromBase64String(input);
-
-				if (bytes.Length == length)
-				{
-					return bytes;
-				}
-			}
-			catch (FormatException)
-			{
-			}
-
-			throw new ArgumentException($"Value must be a base 64 encoded byte[{length}]", name);
-		}
 		private static OneOf<byte[], NotFound> Crypt(byte[] data, ICryptoTransform transform)
 		{
 			using (var memory = new MemoryStream())
