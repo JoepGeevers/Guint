@@ -6,18 +6,18 @@
 
 	[TestClass]
 	public class Guint_Use_Test
-    {
-        [TestInitialize]
-        public void TestInitialize()
-        {
-            Guint.key = null;
-            Guint.vector = null;
-        }
+	{
+		[TestInitialize]
+		public void TestInitialize()
+		{
+			Guint.key = null;
+			Guint.vector = null;
+		}
 
 
 		[TestMethod]
-        public void WhenSettingTheSameKeyVectorPairAgain_DoesNotThrowException()
-        {
+		public void WhenSettingTheSameKeyVectorPairAgain_DoesNotThrowException()
+		{
 			// arrange
 			var secret = Guint.GenerateSecret();
 
@@ -25,8 +25,8 @@
 			Guint.Use(secret);
 			Guint.Use(secret);
 
-            // assert
-            { }
+			// assert
+			{ }
 		}
 
 		[TestMethod]

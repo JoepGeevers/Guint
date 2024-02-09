@@ -6,7 +6,7 @@
 
 	[TestClass]
 	public class Guint_IntegrationTest
-    {
+	{
 		[TestInitialize]
 		public void TestInitialize()
 		{

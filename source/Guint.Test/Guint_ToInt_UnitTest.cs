@@ -6,7 +6,7 @@
 
 	[TestClass]
 	public class Guint_ToInt_UnitTest
-    {
+	{
 		[TestInitialize]
 		public void TestInitialize()
 		{

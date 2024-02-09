@@ -6,7 +6,7 @@
 
 	[TestClass]
 	public class Guint_ToIntOrExplode_UnitTest
-    {
+	{
 		[TestInitialize]
 		public void TestInitialize()
 		{
@@ -67,7 +67,7 @@
 			{
 				_ = guid.ToIntOrExplode();
 			}
-			catch(InvalidOperationException e)
+			catch (InvalidOperationException e)
 			{
 				captivum = e;
 			}

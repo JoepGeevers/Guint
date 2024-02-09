@@ -128,7 +128,7 @@
 			algorithm.Padding = PaddingMode.PKCS7;
 			algorithm.BlockSize = 16 * 8;
 			algorithm.KeySize = 32 * 8;
-			
+
 			return algorithm;
 		}
 
