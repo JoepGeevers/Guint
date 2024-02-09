@@ -5,10 +5,10 @@ namespace Guint.Translator
 		private NotifyIcon trayIcon;
 		private ContextMenuStrip trayMenu;
 		private System.Windows.Forms.Timer clipboardCheckTimer;
-		private string previous;
+		private string? previous;
 
 		string secret = "PUT YOUR SECRET HERE";
-		private string found;
+		private string? found;
 
 		[STAThread]
 		public static void Main()
@@ -53,7 +53,7 @@ namespace Guint.Translator
 			base.OnLoad(e);
 		}
 
-		private void OnExit(object sender, EventArgs e)
+		private void OnExit(object? sender, EventArgs e)
 		{
 			Application.Exit();
 		}
@@ -69,7 +69,7 @@ namespace Guint.Translator
 			base.Dispose(isDisposing);
 		}
 
-		private void CheckClipboard(object sender, EventArgs e)
+		private void CheckClipboard(object? sender, EventArgs e)
 		{
 			if (Clipboard.ContainsText())
 			{
