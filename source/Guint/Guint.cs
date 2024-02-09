@@ -33,9 +33,14 @@
 
 		public static void Use(string secret)
 		{
+			if (secret == null)
+			{
+				throw new ArgumentNullException(nameof(secret), "Secret cannot be null");
+			}
+
 			using (var algorithm = Guint.GetAlgorithm())
 			{
-				var bytes = Convert.FromBase64String(secret);
+				var bytes = GetBytes(secret);
 
 				var key = bytes
 					.Take(algorithm.KeySize / 8)
@@ -65,6 +70,18 @@
 
 				Guint.key = key;
 				Guint.vector = vector;
+			}
+		}
+
+		private static byte[] GetBytes(string secret)
+		{
+			try
+			{
+				return Convert.FromBase64String(secret);
+			}
+			catch (FormatException e)
+			{
+				throw new ArgumentException($"Secret is not valid. Please use {nameof(Guint.GenerateSecret)} to generate a valid secret", nameof(secret), e);
 			}
 		}
 
