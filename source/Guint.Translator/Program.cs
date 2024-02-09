@@ -2,107 +2,107 @@ using Guint;
 
 public class SysTrayApp : Form
 {
-    private NotifyIcon trayIcon;
-    private ContextMenuStrip trayMenu;
-    private System.Windows.Forms.Timer clipboardCheckTimer;
-    private string previous;
+	private NotifyIcon trayIcon;
+	private ContextMenuStrip trayMenu;
+	private System.Windows.Forms.Timer clipboardCheckTimer;
+	private string previous;
 
-    (string key, string vector) Pair = ("", "");
-    private string found;
+	string secret = "PUT YOUR SECRET HERE";
+	private string found;
 
-    [STAThread]
-    public static void Main()
-    {
-        Application.Run(new SysTrayApp());
-    }
+	[STAThread]
+	public static void Main()
+	{
+		Application.Run(new SysTrayApp());
+	}
 
-    public SysTrayApp()
-    {
-        trayMenu = new ContextMenuStrip();
-        trayMenu.Items.Add("Exit", null, OnExit);
+	public SysTrayApp()
+	{
+		Guint.Guint.Use(this.secret);
 
-        trayIcon = new NotifyIcon();
-        trayIcon.Text = "Clipboard Monitor";
-        trayIcon.Icon = new Icon("guint.nuget.icon.ico");
+		trayMenu = new ContextMenuStrip();
+		trayMenu.Items.Add("Exit", null, OnExit);
 
-        trayIcon.ContextMenuStrip = trayMenu;
-        trayIcon.Visible = true;
+		trayIcon = new NotifyIcon();
+		trayIcon.Text = "Clipboard Monitor";
+		trayIcon.Icon = new Icon("guint.nuget.icon.ico");
 
-        trayIcon.BalloonTipClicked += (sender, args) =>
-        {
-            if (!string.IsNullOrEmpty(this.found))
-            {
-                this.previous = this.found;
-                Clipboard.SetText(this.found);
-            }
-        };
+		trayIcon.ContextMenuStrip = trayMenu;
+		trayIcon.Visible = true;
 
-        clipboardCheckTimer = new System.Windows.Forms.Timer();
-        clipboardCheckTimer.Interval = 1000; // Check every second
-        clipboardCheckTimer.Tick += CheckClipboard;
-        clipboardCheckTimer.Start();
-    }
+		trayIcon.BalloonTipClicked += (sender, args) =>
+		{
+			if (!string.IsNullOrEmpty(this.found))
+			{
+				this.previous = this.found;
+				Clipboard.SetText(this.found);
+			}
+		};
 
-    protected override void OnLoad(EventArgs e)
-    {
-        Visible = false; // Hide form window
-        ShowInTaskbar = false; // Remove from taskbar
+		clipboardCheckTimer = new System.Windows.Forms.Timer();
+		clipboardCheckTimer.Interval = 1000; // Check every second
+		clipboardCheckTimer.Tick += CheckClipboard;
+		clipboardCheckTimer.Start();
+	}
 
-        base.OnLoad(e);
-    }
+	protected override void OnLoad(EventArgs e)
+	{
+		Visible = false; // Hide form window
+		ShowInTaskbar = false; // Remove from taskbar
 
-    private void OnExit(object sender, EventArgs e)
-    {
-        Application.Exit();
-    }
+		base.OnLoad(e);
+	}
 
-    protected override void Dispose(bool isDisposing)
-    {
-        if (isDisposing)
-        {
-            // Release the icon resource
-            trayIcon.Dispose();
-        }
+	private void OnExit(object sender, EventArgs e)
+	{
+		Application.Exit();
+	}
 
-        base.Dispose(isDisposing);
-    }
+	protected override void Dispose(bool isDisposing)
+	{
+		if (isDisposing)
+		{
+			// Release the icon resource
+			trayIcon.Dispose();
+		}
 
-    private void CheckClipboard(object sender, EventArgs e)
-    {
-        if (Clipboard.ContainsText())
-        {
-            string current = Clipboard.GetText();
+		base.Dispose(isDisposing);
+	}
 
-            if (current == previous)
-            {
-                return;
-            }
+	private void CheckClipboard(object sender, EventArgs e)
+	{
+		if (Clipboard.ContainsText())
+		{
+			string current = Clipboard.GetText();
 
-            previous = current;
+			if (current == previous)
+			{
+				return;
+			}
 
-            if (int.TryParse(current, out int i))
-            {
-                var encrypted = i.EncryptIntoGuid(this.Pair.key, this.Pair.vector);
-                this.found = encrypted.ToString();
-                ShowBalloon($"An integer `{i}` was found on the clipboard. Click here to copy the corresponding Guid `{encrypted}` onto the clipboard");
-            }
-            else if (Guid.TryParse(current, out var g))
-            {
-                var decrypted = g.DecryptToInt(this.Pair.key, this.Pair.vector);
+			previous = current;
 
-                if (decrypted.HasValue)
-                {
-                    this.found = decrypted.Value.ToString();
+			if (int.TryParse(current, out int i))
+			{
+				var encrypted = i.ToGuid();
+				this.found = encrypted.ToString();
+				ShowBalloon($"An integer `{i}` was found on the clipboard. Click here to copy the corresponding Guid `{encrypted}` onto the clipboard");
+			}
+			else if (Guid.TryParse(current, out var g))
+			{
+				var decrypted = g.ToInt();
 
-                    ShowBalloon($"A guid `{g}` was found on the clipboard. Click here to copy the corresponding int `{decrypted}` onto the clipboard");
-                }
-            }
-        }
-    }
+				decrypted.Switch(
+					i => ShowBalloon($"A guid `{g}` was found on the clipboard. Click here to copy the corresponding int `{decrypted}` onto the clipboard"),
+					notfound => { }
+				);
+			}
+		}
+	}
 
-    private void ShowBalloon(string message)
-    {
-        trayIcon.BalloonTipText = message;
-        trayIcon.ShowBalloonTip(2000);
-    }
+	private void ShowBalloon(string message)
+	{
+		trayIcon.BalloonTipText = message;
+		trayIcon.ShowBalloonTip(2000);
+	}
 }

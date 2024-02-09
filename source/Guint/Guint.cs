@@ -1,132 +1,193 @@
 ﻿namespace Guint
 {
-    using System;
-    using System.IO;
-    using System.Security.Cryptography;
+	using System;
+	using System.IO;
+	using System.Linq;
+	using System.Security.Cryptography;
 
-    public static class Guint
-    {
-        internal static string key;
-        internal static string vector;
+	using OneOf;
+	using OneOf.Types;
 
-        private const string invalidPaddingMessage = "Padding is invalid and cannot be removed.";
+	public static class Guint
+	{
+		internal static byte[] key;
+		internal static byte[] vector;
 
-        public static (string Key, string InitializationVector) GenerateKeyAndInitializationVector()
-        {
-            using (var algorithm = Guint.GetAlgorithm())
-            {
-                algorithm.GenerateKey();
-                algorithm.GenerateIV();
+		private const string invalidPaddingMessage = "Padding is invalid and cannot be removed.";
+		private static string secretNotInitializedMessage = $"Guint cannot convert your input because no secret has been initialized. Use `{nameof(Guint.Use)}` to initialize your personal secret. If you don't have one yet, use `{nameof(Guint.GenerateSecret)}` to generate one.";
 
-                var key = Convert.ToBase64String(algorithm.Key);
-                var initializationVector = Convert.ToBase64String(algorithm.IV);
+		public static string GenerateSecret()
+		{
+			using (var algorithm = Guint.GetAlgorithm())
+			{
+				algorithm.GenerateKey();
+				algorithm.GenerateIV();
 
-                return (key, initializationVector);
-            }
-        }
+				var pair = algorithm.Key
+					.Concat(algorithm.IV)
+					.ToArray();
 
-        internal static Aes GetAlgorithm() => Aes.Create();
+				return Convert.ToBase64String(pair);
+			}
+		}
 
+		public static void Use(string secret)
+		{
+			using (var algorithm = Guint.GetAlgorithm())
+			{
+				var bytes = Convert.FromBase64String(secret);
 
-        public static Guid EncryptIntoGuid(this Int32 input, string key, string vector)
-        {
-            using (var algorithm = Guint.GetAlgorithm())
-            using (var encryptor = algorithm.CreateEncryptor(Convert.FromBase64String(key), Convert.FromBase64String(vector)))
-            {
-                var bytes = BitConverter.GetBytes(input);
+				var key = bytes
+					.Take(algorithm.KeySize / 8)
+					.ToArray();
 
-                if (false == BitConverter.IsLittleEndian)
-                {
-                    Array.Reverse(bytes);
-                }
+				var vector = bytes
+					.Skip(algorithm.KeySize / 8)
+					.ToArray();
 
-                return new Guid(Crypt(bytes, encryptor));
-            }
-        }
+				if (key.Length != algorithm.KeySize / 8)
+				{
+					throw new ArgumentException($"Secret is not valid. Please use {nameof(Guint.GenerateSecret)} to generate a valid secret", secret);
+				}
 
-        public static Int32? DecryptToInt(this Guid guid, string key, string vector)
-        {
-            using (var algorithm = Guint.GetAlgorithm())
-            using (var decryptor = algorithm.CreateDecryptor(Convert.FromBase64String(key), Convert.FromBase64String(vector)))
-            {
-                var bytes = Crypt(guid.ToByteArray(), decryptor);
+				if (vector.Length != algorithm.BlockSize / 8) // The size of the IV property must be the same as the BlockSize property divided by 8
+				{
+					throw new ArgumentException($"Secret is not valid. Please use {nameof(Guint.GenerateSecret)} to generate a valid secret", secret);
+				}
 
-                if (null == bytes)
-                {
-                    return default;
-                }
+				if (Guint.key != null || Guint.vector != null)
+				{
+					if (false == key.SequenceEqual(Guint.key) && false == vector.SequenceEqual(Guint.vector))
+					{
+						throw new InvalidOperationException("Key and vector cannot be changed");
+					}
+				}
 
-                return BitConverter.ToInt32(bytes, 0);
-            }
-        }
+				Guint.key = key;
+				Guint.vector = vector;
+			}
+		}
 
-        private static byte[] Crypt(byte[] data, ICryptoTransform transform)
-        {
-            using (var memory = new MemoryStream())
-            using (var crypto = new CryptoStream(memory, transform, CryptoStreamMode.Write))
-            {
-                crypto.Write(data, 0, data.Length);
+		public static Guid ToGuid(this Int32 input)
+		{
+			if (Guint.key == null || Guint.vector == null)
+			{
+				throw new InvalidOperationException(Guint.secretNotInitializedMessage);
+			}
 
-                try
-                {
-                    crypto.FlushFinalBlock();
-                }
-                catch (CryptographicException e) when (e.Message == invalidPaddingMessage)
-                {
-                    return default;
+			using (var algorithm = Guint.GetAlgorithm())
+			using (var encryptor = algorithm.CreateEncryptor(key, vector))
+			{
+				var bytes = BitConverter.GetBytes(input);
 
-                }
-                finally
-                {
-                    try
-                    {
-                        crypto.Close();
-                    }
-                    catch (CryptographicException e) when (e.Message == invalidPaddingMessage)
-                    {
-                        // In .NET Framework, when the CryptoStream is disposed, the stream is flushed, throwing the exact same CryptographicException again
-                        // Closing the stream ourselves and catching the CryptographicException allows us to return default
-                    }
-                }
+				if (false == BitConverter.IsLittleEndian)
+				{
+					Array.Reverse(bytes);
+				}
 
-                return memory.ToArray();
-            }
-        }
+				return Guint.Crypt(bytes, encryptor)
+					.Match(
+						b => new Guid(b),
+						notfound => throw new InvalidOperationException("This error should really, really never happen, because any 32-bit int fits into a 128-bit Guid. Call me!"));
+			}
+		}
 
-        public static void Set(string key, string vector)
-        {
-            if (Guint.key != null || Guint.vector != null)
-            {
-                throw new InvalidOperationException("Cannot set key and vector more than once");
-            }
+		public static Int32 ToIntOrDefault(this Guid input) => input.ToInt()
+			.Match(
+				i => i,
+				notfound => default(Int32));
 
-            try
-            {
-                EncryptIntoGuid(123, key, vector);
-            }
-            catch(Exception e)
-            {
-                throw new ArgumentException("Specified key and vector are invalid. See inner exception for more details", e)
-                {
-                    Data = {
-                        { "Key", key },
-                        { "Vector", vector },
-                    },
-                };
-            }
+		public static Int32 ToIntOrExplode(this Guid input) => input.ToInt()
+			.Match(
+				i => i,
+				notfound => throw new InvalidOperationException("Guint could not convert your input to an Int32 with the specified secret"));
 
-            Guint.key = key;
-            Guint.vector = vector;
-        }
+		public static OneOf<Int32, NotFound> ToInt(this Guid guid)
+		{
+			if (Guint.key == null || Guint.vector == null)
+			{
+				throw new InvalidOperationException(Guint.secretNotInitializedMessage);
+			}
 
-        public static Guid EncryptIntoGuid(int input)
-        {
-            if (Guint.key == null || Guint.vector == null)
-            {
-                throw new InvalidOperationException("Cannot encrypt because key and vector have not yet been set");
-            }
+			using (var algorithm = Guint.GetAlgorithm())
+			using (var decryptor = algorithm.CreateDecryptor(key, vector))
+			{
+				return Guint.Crypt(guid.ToByteArray(), decryptor)
+					.Match<OneOf<Int32, NotFound>>(
+						bytes => BitConverter.ToInt32(bytes, 0),
+						notfound => notfound);
+			}
+		}
 
-            throw new NotImplementedException();
-        }
-    }
+		internal static Aes GetAlgorithm()
+		{
+			var algorithm = Aes.Create();
+
+			algorithm.FeedbackSize = 8;
+			algorithm.Mode = CipherMode.CBC;
+			algorithm.Padding = PaddingMode.PKCS7;
+			algorithm.BlockSize = 16 * 8;
+			algorithm.KeySize = 32 * 8;
+
+			return algorithm;
+		}
+
+		private static byte[] GetRgbKey(string key) => GetRgb(key, "key", 32);
+
+		private static byte[] GetRgbVector(string vector) => GetRgb(vector, "vector", 16);
+
+		private static byte[] GetRgb(string input, string name, int length)
+		{
+			if (input == null)
+			{
+				throw new ArgumentNullException(name);
+			}
+
+			try
+			{
+				var bytes = Convert.FromBase64String(input);
+
+				if (bytes.Length == length)
+				{
+					return bytes;
+				}
+			}
+			catch (FormatException)
+			{
+			}
+
+			throw new ArgumentException($"Value must be a base 64 encoded byte[{length}]", name);
+		}
+		private static OneOf<byte[], NotFound> Crypt(byte[] data, ICryptoTransform transform)
+		{
+			using (var memory = new MemoryStream())
+			using (var crypto = new CryptoStream(memory, transform, CryptoStreamMode.Write))
+			{
+				crypto.Write(data, 0, data.Length);
+
+				try
+				{
+					crypto.FlushFinalBlock();
+				}
+				catch (CryptographicException e) when (e.Message == invalidPaddingMessage)
+				{
+					return new NotFound();
+				}
+				finally
+				{
+					try
+					{
+						crypto.Close();
+					}
+					catch (CryptographicException e) when (e.Message == invalidPaddingMessage)
+					{
+						// In .NET Framework, when the CryptoStream is disposed, the stream is flushed, throwing the exact same CryptographicException again
+						// Closing the stream ourselves and catching the CryptographicException allows us to return default
+					}
+				}
+
+				return memory.ToArray();
+			}
+		}
+	}
 }

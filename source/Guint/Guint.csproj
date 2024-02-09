@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<Version>1.1.5</Version>
+		<Version>2.0.0</Version>
 		<Authors>Joep Geevers</Authors>
 		<Description>Convert ints into Guids and vice versa, to avoid enumeration leaks in your application. Use Guids for your API endpoints and ints in your database and put Guint in between. Have your cake and eat it too!</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -26,6 +26,10 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="Guint.Test" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="OneOf" Version="3.0.263" />
     </ItemGroup>
     
 </Project>
