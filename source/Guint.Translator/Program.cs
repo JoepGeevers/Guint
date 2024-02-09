@@ -2,12 +2,12 @@ namespace Guint.Translator
 {
 	public class SysTrayApp : Form
 	{
-		private NotifyIcon trayIcon;
-		private ContextMenuStrip trayMenu;
-		private System.Windows.Forms.Timer clipboardCheckTimer;
+		private readonly NotifyIcon trayIcon;
+		private readonly ContextMenuStrip trayMenu;
+		private readonly System.Windows.Forms.Timer clipboardCheckTimer;
 		private string? previous;
 
-		string secret = "PUT YOUR SECRET HERE";
+		private const string secret = "PUT YOUR SECRET HERE";
 		private string? found;
 
 		[STAThread]
@@ -18,7 +18,7 @@ namespace Guint.Translator
 
 		public SysTrayApp()
 		{
-			Guint.Use(this.secret);
+			Guint.Use(secret);
 
 			trayMenu = new ContextMenuStrip();
 			trayMenu.Items.Add("Exit", null, OnExit);
