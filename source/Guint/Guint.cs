@@ -14,7 +14,8 @@
 		internal static byte[] vector;
 
 		private const string invalidPaddingMessage = "Padding is invalid and cannot be removed.";
-		private static string secretNotInitializedMessage = $"Guint cannot convert your input because no secret has been initialized. Use `{nameof(Guint.Use)}` to initialize your personal secret. If you don't have one yet, use `{nameof(Guint.GenerateSecret)}` to generate one.";
+		private static readonly string secretNotInitializedMessage = $"Guint cannot convert your input because no secret has been initialized. Use `{nameof(Guint.Use)}` to initialize your personal secret. If you don't have one yet, use `{nameof(Guint.GenerateSecret)}` to generate one.";
+		private static readonly string secretInvalidMessage = $"Secret is not valid. Please use {nameof(Guint.GenerateSecret)} to generate a valid secret";
 
 		public static string GenerateSecret()
 		{
@@ -52,19 +53,19 @@
 
 				if (key.Length != algorithm.KeySize / 8)
 				{
-					throw new ArgumentException($"Secret is not valid. Please use {nameof(Guint.GenerateSecret)} to generate a valid secret", secret);
+					throw new ArgumentException(secretInvalidMessage, nameof(secret));
 				}
 
 				if (vector.Length != algorithm.BlockSize / 8) // The size of the IV property must be the same as the BlockSize property divided by 8
 				{
-					throw new ArgumentException($"Secret is not valid. Please use {nameof(Guint.GenerateSecret)} to generate a valid secret", secret);
+					throw new ArgumentException(secretInvalidMessage, nameof(secret));
 				}
 
 				if (Guint.key != null || Guint.vector != null)
 				{
 					if (false == key.SequenceEqual(Guint.key) && false == vector.SequenceEqual(Guint.vector))
 					{
-						throw new InvalidOperationException("Key and vector cannot be changed");
+						throw new InvalidOperationException("Secret cannot be changed");
 					}
 				}
 
@@ -81,7 +82,7 @@
 			}
 			catch (FormatException e)
 			{
-				throw new ArgumentException($"Secret is not valid. Please use {nameof(Guint.GenerateSecret)} to generate a valid secret", nameof(secret), e);
+				throw new ArgumentException(secretInvalidMessage, nameof(secret), e);
 			}
 		}
 

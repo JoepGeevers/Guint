@@ -105,7 +105,7 @@
 
 			// assert
 			Assert.IsNotNull(captivum);
-			Assert.IsTrue(captivum.Message.Contains("cannot be changed"));
+			Assert.IsTrue(captivum.Message.Contains("Secret cannot be changed"));
 		}
 	}
 }
