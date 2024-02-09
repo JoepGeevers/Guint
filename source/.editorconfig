@@ -24,6 +24,8 @@ dotnet_diagnostic.CS8618.severity = error
 
 # S1144: Unused private types or members should be removed
 dotnet_diagnostic.S1144.severity = error
+dotnet_diagnostic.S1066.severity = silent
+dotnet_diagnostic.S1125.severity = silent
 
 [*.{cs,vb}]
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
@@ -89,4 +91,4 @@ dotnet_naming_style.pascal_case.capitalization = pascal_case
 
 csharp_style_prefer_readonly_struct = true:error
 csharp_style_prefer_readonly_struct_member = true:error
-dotnet_style_readonly_field = true:error
+dotnet_style_readonly_field = true:suggestion
