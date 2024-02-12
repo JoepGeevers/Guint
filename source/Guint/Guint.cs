@@ -14,7 +14,8 @@
 		internal static byte[] vector;
 
 		private const string invalidPaddingMessage = "Padding is invalid and cannot be removed.";
-		private static string secretNotInitializedMessage = $"Guint cannot convert your input because no secret has been initialized. Use `{nameof(Guint.Use)}` to initialize your personal secret. If you don't have one yet, use `{nameof(Guint.GenerateSecret)}` to generate one.";
+		private static readonly string secretNotInitializedMessage = $"Guint cannot convert your input because no secret has been initialized. Use `{nameof(Guint.Use)}` to initialize your personal secret. If you don't have one yet, use `{nameof(Guint.GenerateSecret)}` to generate one.";
+		private static readonly string secretInvalidMessage = $"Secret is not valid. Please use {nameof(Guint.GenerateSecret)} to generate a valid secret";
 
 		public static string GenerateSecret()
 		{
@@ -33,9 +34,14 @@
 
 		public static void Use(string secret)
 		{
+			if (secret == null)
+			{
+				throw new ArgumentNullException(nameof(secret), "Secret cannot be null");
+			}
+
 			using (var algorithm = Guint.GetAlgorithm())
 			{
-				var bytes = Convert.FromBase64String(secret);
+				var bytes = Guint.GetBytes(secret);
 
 				var key = bytes
 					.Take(algorithm.KeySize / 8)
@@ -47,24 +53,36 @@
 
 				if (key.Length != algorithm.KeySize / 8)
 				{
-					throw new ArgumentException($"Secret is not valid. Please use {nameof(Guint.GenerateSecret)} to generate a valid secret", secret);
+					throw new ArgumentException(Guint.secretInvalidMessage, nameof(secret));
 				}
 
 				if (vector.Length != algorithm.BlockSize / 8) // The size of the IV property must be the same as the BlockSize property divided by 8
 				{
-					throw new ArgumentException($"Secret is not valid. Please use {nameof(Guint.GenerateSecret)} to generate a valid secret", secret);
+					throw new ArgumentException(Guint.secretInvalidMessage, nameof(secret));
 				}
 
 				if (Guint.key != null || Guint.vector != null)
 				{
 					if (false == key.SequenceEqual(Guint.key) && false == vector.SequenceEqual(Guint.vector))
 					{
-						throw new InvalidOperationException("Key and vector cannot be changed");
+						throw new InvalidOperationException("Secret cannot be changed");
 					}
 				}
 
 				Guint.key = key;
 				Guint.vector = vector;
+			}
+		}
+
+		private static byte[] GetBytes(string secret)
+		{
+			try
+			{
+				return Convert.FromBase64String(secret);
+			}
+			catch (FormatException e)
+			{
+				throw new ArgumentException(Guint.secretInvalidMessage, nameof(secret), e);
 			}
 		}
 
@@ -132,32 +150,6 @@
 			return algorithm;
 		}
 
-		private static byte[] GetRgbKey(string key) => GetRgb(key, "key", 32);
-
-		private static byte[] GetRgbVector(string vector) => GetRgb(vector, "vector", 16);
-
-		private static byte[] GetRgb(string input, string name, int length)
-		{
-			if (input == null)
-			{
-				throw new ArgumentNullException(name);
-			}
-
-			try
-			{
-				var bytes = Convert.FromBase64String(input);
-
-				if (bytes.Length == length)
-				{
-					return bytes;
-				}
-			}
-			catch (FormatException)
-			{
-			}
-
-			throw new ArgumentException($"Value must be a base 64 encoded byte[{length}]", name);
-		}
 		private static OneOf<byte[], NotFound> Crypt(byte[] data, ICryptoTransform transform)
 		{
 			using (var memory = new MemoryStream())

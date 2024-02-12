@@ -13,6 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guint.Translator", "Guint.T
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{49D7B228-0020-4166-BB1E-B386D5AB3EB3}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		..\.gitignore = ..\.gitignore
 		guint.nuget.icon.png = guint.nuget.icon.png
 		..\LICENSE = ..\LICENSE

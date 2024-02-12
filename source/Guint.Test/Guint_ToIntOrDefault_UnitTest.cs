@@ -53,7 +53,7 @@
 		}
 
 		[TestMethod]
-		public void ToIntOrDefault_RandomGuid_WithConfiguredKeyVector_ReturnsZero()
+		public void ToIntOrDefault_RandomGuid_ReturnsZero()
 		{
 			// arrange
 			var guid = Guid.NewGuid();
