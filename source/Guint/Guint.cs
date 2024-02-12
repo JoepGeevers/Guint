@@ -41,7 +41,7 @@
 
 			using (var algorithm = Guint.GetAlgorithm())
 			{
-				var bytes = GetBytes(secret);
+				var bytes = Guint.GetBytes(secret);
 
 				var key = bytes
 					.Take(algorithm.KeySize / 8)
@@ -53,12 +53,12 @@
 
 				if (key.Length != algorithm.KeySize / 8)
 				{
-					throw new ArgumentException(secretInvalidMessage, nameof(secret));
+					throw new ArgumentException(Guint.secretInvalidMessage, nameof(secret));
 				}
 
 				if (vector.Length != algorithm.BlockSize / 8) // The size of the IV property must be the same as the BlockSize property divided by 8
 				{
-					throw new ArgumentException(secretInvalidMessage, nameof(secret));
+					throw new ArgumentException(Guint.secretInvalidMessage, nameof(secret));
 				}
 
 				if (Guint.key != null || Guint.vector != null)
@@ -82,7 +82,7 @@
 			}
 			catch (FormatException e)
 			{
-				throw new ArgumentException(secretInvalidMessage, nameof(secret), e);
+				throw new ArgumentException(Guint.secretInvalidMessage, nameof(secret), e);
 			}
 		}
 
