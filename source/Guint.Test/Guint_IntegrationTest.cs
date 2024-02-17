@@ -10,8 +10,7 @@
 		[TestInitialize]
 		public void TestInitialize()
 		{
-			Guint.key = null;
-			Guint.vector = null;
+			Guint.secret = null;
 		}
 
 		[TestMethod]

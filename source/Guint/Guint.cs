@@ -10,8 +10,7 @@
 
 	public static class Guint
 	{
-		internal static byte[] key;
-		internal static byte[] vector;
+		internal static Secret secret;
 
 		private const string invalidPaddingMessage = "Padding is invalid and cannot be removed.";
 		private static readonly string secretNotInitializedMessage = $"Guint cannot convert your input because no secret has been initialized. Use `{nameof(Guint.Use)}` to initialize your personal secret. If you don't have one yet, use `{nameof(Guint.GenerateSecret)}` to generate one.";
@@ -61,16 +60,15 @@
 					throw new ArgumentException(Guint.secretInvalidMessage, nameof(secret));
 				}
 
-				if (Guint.key != null || Guint.vector != null)
+				if (Guint.secret != null)
 				{
-					if (false == key.SequenceEqual(Guint.key) && false == vector.SequenceEqual(Guint.vector))
+					if (false == key.SequenceEqual(Guint.secret.Key) && false == vector.SequenceEqual(Guint.secret.Vector))
 					{
 						throw new InvalidOperationException("Secret cannot be changed");
 					}
 				}
 
-				Guint.key = key;
-				Guint.vector = vector;
+				Guint.secret = new Secret(key, vector);
 			}
 		}
 
@@ -88,13 +86,13 @@
 
 		public static Guid ToGuid(this Int32 input)
 		{
-			if (Guint.key == null || Guint.vector == null)
+			if (Guint.secret == null)
 			{
 				throw new InvalidOperationException(Guint.secretNotInitializedMessage);
 			}
 
 			using (var algorithm = Guint.GetAlgorithm())
-			using (var encryptor = algorithm.CreateEncryptor(key, vector))
+			using (var encryptor = algorithm.CreateEncryptor(Guint.secret.Key, Guint.secret.Vector))
 			{
 				var bytes = BitConverter.GetBytes(input);
 
@@ -110,25 +108,27 @@
 			}
 		}
 
-		public static Int32 ToIntOrDefault(this Guid input) => input.ToInt()
-			.Match(
-				i => i,
-				notfound => default(Int32));
+		public static Int32 ToIntOrDefault(this Guid input)
+			=> input.ToInt()
+				.Match(
+					i => i,
+					notfound => default(Int32));
 
-		public static Int32 ToIntOrExplode(this Guid input) => input.ToInt()
-			.Match(
-				i => i,
-				notfound => throw new InvalidOperationException("Guint could not convert your input to an Int32 with the specified secret"));
+		public static Int32 ToIntOrExplode(this Guid input)
+			=> input.ToInt()
+				.Match(
+					i => i,
+					notfound => throw new InvalidOperationException("Guint could not convert your input to an Int32 with the specified secret"));
 
 		public static OneOf<Int32, NotFound> ToInt(this Guid guid)
 		{
-			if (Guint.key == null || Guint.vector == null)
+			if (Guint.secret == null)
 			{
 				throw new InvalidOperationException(Guint.secretNotInitializedMessage);
 			}
 
 			using (var algorithm = Guint.GetAlgorithm())
-			using (var decryptor = algorithm.CreateDecryptor(key, vector))
+			using (var decryptor = algorithm.CreateDecryptor(Guint.secret.Key, Guint.secret.Vector))
 			{
 				return Guint.Crypt(guid.ToByteArray(), decryptor)
 					.Match<OneOf<Int32, NotFound>>(
